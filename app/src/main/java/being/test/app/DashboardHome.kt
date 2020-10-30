@@ -80,7 +80,7 @@ class DashboardHome : AppCompatActivity(), View.OnClickListener {
     override fun onClick(p0: View?) {
         when (p0!!.id) {
             R.id.writeBlogCircleView -> {
-
+                startActivity(Intent(this@DashboardHome, WriteBlog::class.java))
             }
             R.id.viewBlogCircleView -> {
                 startActivity(Intent(this@DashboardHome, ListAllBlogs::class.java))

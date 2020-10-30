@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?actionBarSize">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="240dp">
+
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/reporters_article_upload_imageview"
+android:scaleType="centerCrop"
+                    android:src="@drawable/blogs_default"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/trending_gradient_shape" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:weightSum="1"
+                    android:id="@+id/media_container"
+
+                   android:layout_centerInParent="true"
+
+                    android:orientation="horizontal">
+
+
+
+
+                    <being.test.app.ColorCircle
+                        android:id="@+id/camera_button"
+                        android:layout_width="wrap_content"
+
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="4dp"
+                        app:borderColor="@color/colorGrey"
+                        app:borderWidth="2dp"
+                        app:circleRadius="36dp"
+                        app:fillColor="?android:attr/colorBackground"
+                        app:srcCompat="@drawable/ic_add_a_photo_24px" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reporters_article_input_author"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/input_bg"
+                android:enabled="false"
+                android:hint="@string/author"
+                android:inputType="textPersonName"
+                android:padding="12dp"
+                android:textColorHint="#aaa" />
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reporters_article_input_title"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/input_bg"
+                android:hint="@string/title"
+                android:inputType="textEmailSubject"
+                android:padding="12dp"
+                android:textColorHint="#aaa" />
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reporters_article_input_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/text_12"
+                android:background="@drawable/input_bg"
+                android:hint="@string/description"
+                android:inputType="textMultiLine"
+                android:maxLines="20"
+                android:minLines="7"
+                android:padding="12dp"
+                android:textColorHint="#aaa" />
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:layout_alignParentBottom="true"
+
+        android:gravity="center">
+
+        <ProgressBar
+            android:id="@+id/reporters_article_pb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminate="true"
+            android:progressTint="@color/colorPrimaryDark" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/reporters_article_send_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="@color/colorAccent"
+            android:padding="12dp"
+            android:text="@string/publish"
+
+            android:textColor="@color/colorPrimaryDark" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
