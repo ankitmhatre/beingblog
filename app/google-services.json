@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "222528570947",
+    "firebase_url": "https://being-test-sandbox.firebaseio.com",
+    "project_id": "being-test-sandbox",
+    "storage_bucket": "being-test-sandbox.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222528570947:android:85ceb71d3db8a7beaf36f6",
+        "android_client_info": {
+          "package_name": "being.test.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "222528570947-6vp2aj7etadtll58l9ojl6197brbs3vm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoc3WZpJS1Bu5Jci5IZ21YIdbAqv7lak8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "222528570947-6vp2aj7etadtll58l9ojl6197brbs3vm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
