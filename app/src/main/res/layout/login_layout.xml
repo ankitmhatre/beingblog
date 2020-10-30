@@ -1,15 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/button"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:paddingTop="56dp"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp">
+
+
+    <RadioGroup
         android:layout_width="wrap_content"
+        android:layout_height="72dp"
+
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/radioGroup">
+        <RadioButton
+            android:id="@+id/radio0"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_flat_selector"
+            android:button="@android:color/transparent"
+            android:padding="12dp"
+            android:layout_margin="12dp"
+            android:checked="true"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:text="@string/admin"
+            android:textColor="@drawable/radio_flat_text_selector" />
+
+        <RadioButton
+            android:id="@+id/radio1"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_flat_selector"
+            android:button="@android:color/transparent"
+            android:padding="12dp"
+            android:layout_margin="12dp"
+            android:text="@string/user"
+            android:textColor="@drawable/radio_flat_text_selector" />
+    </RadioGroup>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+
+        android:layout_margin="12dp"
+        android:gravity="center"
+        android:layout_height="?actionBarSize" >
+
+        <ProgressBar
+            android:id="@+id/reporters_login_progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:visibility="gone"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+
+
+    </RelativeLayout>
+    <TextView android:id="@+id/link_signup"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
-        tools:layout_editor_absoluteX="164dp"
-        tools:layout_editor_absoluteY="349dp" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_marginBottom="24dp"
+        android:textColor="#2196F3"
+        android:text="@string/not_sure"
+        android:gravity="center"
+        android:textSize="16sp"/>
+
+</LinearLayout>
