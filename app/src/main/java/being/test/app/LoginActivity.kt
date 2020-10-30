@@ -180,12 +180,14 @@ role = "admin"
                                     "DocumentSnapshot added with ID: " + documentReference.id
                                 )
 //TODO("Handle all scenarios here")
+                                PrefUtils.setString(this@LoginActivity, PrefKeys.USER_ACC_TYPE,  role)
                                 startActivityForResult(
                                     Intent(
                                         this@LoginActivity,
                                         DashboardHome::class.java
                                     ), 990
                                 )
+
 
                             }
                             .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }

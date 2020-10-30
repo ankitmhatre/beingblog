@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item  name="writeBlogCircleView" type="id" />
+    <item name="viewBlogCircleView" type="id" />
+    <item name="checkFavoriteCircleView" type="id" />
+
+
+</resources>

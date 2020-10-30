@@ -13,4 +13,18 @@
     <string name="admin">Admin</string>
     <string name="google_login">Google Sign In</string>
     <string name="not_sure">Not sure what is this ?</string>
+    <string name="write">Create</string>
+    <string name="read">Read</string>
+    <string name="favourite">Favourites</string>
+    <string name="no_news_greet">Available soon</string>
+    <string name="successfully_updated">Successfully updated</string>
+    <string name="dummy_blog_title">New here many lines and then i dont know man just click and fuck up  </string>
+    <string name="title">Title</string>
+    <string name="date">Date</string>
+    <string name="author">Author</string>
+
+    <string name="find_more_on_being_blog_app">Find more on the Being Blog App </string>
+    <string name="no_internet_conn">Not connected to the internet</string>
+
+    <string name="some_error">There was some error</string>
 </resources>

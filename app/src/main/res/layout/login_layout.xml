@@ -18,7 +18,7 @@
 
         android:orientation="horizontal"
         android:layout_gravity="center_horizontal"
-        android:id="@+id/radioGroup">
+        android:id="@+id/usersRadioGroup">
         <RadioButton
             android:id="@+id/radio0"
             android:gravity="center"
@@ -28,7 +28,7 @@
             android:button="@android:color/transparent"
             android:padding="12dp"
             android:layout_margin="12dp"
-            android:checked="true"
+
             android:textAllCaps="true"
             android:textStyle="bold"
             style="@style/TextAppearance.MaterialComponents.Subtitle1"
@@ -46,6 +46,7 @@
             android:background="@drawable/radio_flat_selector"
             android:button="@android:color/transparent"
             android:padding="12dp"
+            android:checked="true"
             android:layout_margin="12dp"
             android:text="@string/user"
             android:textColor="@drawable/radio_flat_text_selector" />

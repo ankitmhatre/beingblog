@@ -26,6 +26,9 @@
 
         <activity android:name=".LoginActivity" android:noHistory="true" android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".DashboardHome" android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".CreateBlogActivity" android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ListAllBlogs" android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".FullViewActivity" android:theme="@style/AppTheme.NoActionBar" />
 
 
     </application>
