@@ -7,25 +7,29 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.common.SignInButton
 import com.google.firebase.auth.FirebaseAuth
-
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class LoginActivity : AppCompatActivity() {
 
     lateinit var pb: ProgressBar
     lateinit var login_btn: SignInButton
-
+    lateinit var usersRadioGroup: RadioGroup
     lateinit var apiInterface: ApiInterface
     lateinit var link_signup: TextView
+    var db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val RC_SIGN_IN = 32
     private val TAG = LoginActivity::class.java.simpleName
     val user = FirebaseAuth.getInstance().currentUser
+    var role: String = "user"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -34,12 +38,26 @@ class LoginActivity : AppCompatActivity() {
 
         setContentView(R.layout.login_layout)
         pb = findViewById(R.id.reporters_login_progress_bar)
+        usersRadioGroup = findViewById(R.id.usersRadioGroup)
+        usersRadioGroup.setOnCheckedChangeListener { radioGroup, i ->
+
+            when (i) {
+                R.id.radio0 -> {
+role = "admin"
+                }
+                R.id.radio1 ->{
+                    role = "user"
+                }
+            }
+            Log.d("ListenRadio", "" + role)
+        }
         login_btn = findViewById(R.id.sign_in_button)
 
 
         val providers = arrayListOf(
             // AuthUI.IdpConfig.PhoneBuilder().build(),
-            AuthUI.IdpConfig.GoogleBuilder().build())
+            AuthUI.IdpConfig.GoogleBuilder().build()
+        )
 
         if (user != null) {
             // User is signed in
@@ -139,7 +157,43 @@ class LoginActivity : AppCompatActivity() {
                         // Successfully signed in
                         val user = FirebaseAuth.getInstance().currentUser
                         Log.d(TAG, "user = $user")
-                        startActivityForResult(Intent(this@LoginActivity, DashboardHome::class.java), 990)
+                        // Create a new user with a first and last name
+
+                        // Create a new user with a first and last name
+                        // Create a new user with a first and last name
+                        val firestoreUserData = hashMapOf(
+                            "uid" to user!!.uid,
+                            "name" to user.displayName,
+                            "email" to user.email,
+                            "role" to role
+                        )
+
+
+// Add a new document with a generated ID
+
+// Add a new document with a generated ID
+                        db.collection("users")
+                            .add(firestoreUserData)
+                            .addOnSuccessListener { documentReference ->
+                                Log.d(
+                                    TAG,
+                                    "DocumentSnapshot added with ID: " + documentReference.id
+                                )
+//TODO("Handle all scenarios here")
+                                startActivityForResult(
+                                    Intent(
+                                        this@LoginActivity,
+                                        DashboardHome::class.java
+                                    ), 990
+                                )
+
+                            }
+                            .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }
+
+
+
+
+
                         // ...
                     } else {
                         Log.d(TAG, "error ${response.error!!.errorCode}")
