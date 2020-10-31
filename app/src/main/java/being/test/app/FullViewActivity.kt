@@ -129,21 +129,25 @@ class FullViewActivity : AppCompatActivity() {
 
 
         try {
-            val a = i.extras?.getSerializable("blogItem") as BlogItem
 
-            Log.d("blogs", a.toString())
-            bookmarkBlogItem = a
-            favoriteBLog.setImageDrawable(
-                ContextCompat.getDrawable(
-                    this,
-                    when(a.isPinned){
-                        0 -> R.drawable.ic_star_border
-                        1 -> R.drawable.ic_star
-                        else -> R.drawable.ic_star_border
-                    }
-                )
-            );
-            thisisthearticle(a)
+globalViewModel.getBlogItem(i.extras?.get("blog_id") as Long).observeForever {
+
+    bookmarkBlogItem = it
+    favoriteBLog.setImageDrawable(
+        ContextCompat.getDrawable(
+            this,
+            when(it.isPinned){
+                0 -> R.drawable.ic_star_border
+                1 -> R.drawable.ic_star
+                else -> R.drawable.ic_star_border
+            }
+        )
+    );
+    thisisthearticle(it)
+}
+
+
+
         } catch (e: Exception) {
             e.printStackTrace()
 
