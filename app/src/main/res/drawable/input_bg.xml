@@ -8,6 +8,6 @@
         android:color="?attr/colorPrimaryDark" />
     <corners
         android:radius="10dp" />
-    <solid android:color="#E5E4E4" />
+    <solid android:color="#F3F3F3" />
 
 </shape>

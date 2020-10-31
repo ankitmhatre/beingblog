@@ -22,6 +22,7 @@
     <string name="title">Title</string>
     <string name="date">Date</string>
     <string name="author">Author</string>
+    <string name="search_here">Search by title or description</string>
 
     <string name="please_upload_image">Please upload an image</string>
     <string name="select_a_file">Select a media file</string>

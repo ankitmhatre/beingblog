@@ -7,8 +7,7 @@ public class API {
 
 
 
-    public static final String BASE_URL = "https://uran-redef.firebaseio.com/";
-    public static final String HOSTING_URL = "https://uran-redef.firebaseapp.com/";
+    public static final String BASE_URL = "https://being-test-sandbox.firebaseio.com";
 
     private static Retrofit retrofit = null;
 

@@ -174,21 +174,7 @@ public class Utilities {
         return formatCurrentTimeStamp(fromDate);
     }
 
-    public static String getShareableLink(long newsId) {
-        String url = "https://nmcity.xyz/read?id=";
-        String source = newsId + "";
-        byte[] byteArray = source.getBytes(StandardCharsets.UTF_8);
-        return url + Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-    }
-
-    public static String decodeShareableLink(Uri link) {
-        String idPar = link.getQueryParameter("id");
-        String url = "nmcity.xyz/read?id=";
-        byte[] data = Base64.decode(idPar, Base64.DEFAULT);
-
-        return new String(data, StandardCharsets.UTF_8);
-    }
 
     public static String encodetoBase64(String id) {
         return Base64.encodeToString(id.getBytes(), Base64.DEFAULT);
@@ -199,27 +185,8 @@ public class Utilities {
         return idPar;
     }
 
-    public static String getShareableContent(Context c, String content, String title, long id) {
-//        String[] listOfWords = content.split(" ");
-//        Log.d("len", "$listOfWords");
-        String shareContent = "";
-//        int len = 0;
-//        for (String word : listOfWords) {
-//            len++;
-//            if (len <= 30) {
-//                shareContent = shareContent + " " + word;
-//            }
-//        }
-        shareContent = ""
-//                title + " :\n\n "
-                + c.getString(R.string.find_more_on_being_blog_app) + "\n"
-                + getShareableLink(id);
-        return shareContent;
-    }
 
-    public static String getUniqueDeviceId(ContentResolver contentResolver) {
-        return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-    }
+
 
     public static String convertMToHM(String mins) {
         int hours = Integer.parseInt(mins) / 60; //since both are ints, you get an int

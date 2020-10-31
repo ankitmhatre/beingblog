@@ -77,7 +77,7 @@ class BlogAdapter(val activity: Activity) : RecyclerView.Adapter<BlogAdapter.MyV
         holder.title.text = BlogItems[position].title
         holder.content.text = BlogItems[position].content
         holder.publishedOn.text = Utilities.getDateampm(BlogItems[position].timestamp)
-        holder.author.text = BlogItems[position].publisher
+        holder.author.text = BlogItems[position].author_name
 
         // Log.d("imageUrl", "${API.BASE_URL}${BlogItems!![position].image_url}")
         holder.iv.scaleType = ImageView.ScaleType.CENTER_CROP
@@ -87,13 +87,10 @@ class BlogAdapter(val activity: Activity) : RecyclerView.Adapter<BlogAdapter.MyV
             bundle.putExtra("title", BlogItems[position].title)
             bundle.putExtra("content", BlogItems[position].content)
             bundle.putExtra("reported_on", BlogItems[position].timestamp)
-            bundle.putExtra("reported_by", BlogItems[position].publisher)
+            bundle.putExtra("author_name", BlogItems[position].author_name)
             bundle.putExtra("img_url", BlogItems[position].image_url)
-            bundle.putExtra("title", BlogItems[position].title)
-            bundle.putExtra("nid", BlogItems[position].nid)
+            bundle.putExtra("blog_id", BlogItems[position].blog_id)
             bundle.putExtra("isPinned", BlogItems[position].isPinned)
-            bundle.putExtra("media_type", BlogItems[position].media_type)
-
             bundle.putExtra("BlogItem", BlogItems[position])
             activity.startActivity(bundle)
 
@@ -108,6 +105,7 @@ class BlogAdapter(val activity: Activity) : RecyclerView.Adapter<BlogAdapter.MyV
 
         holder.iv.load(url) {
             placeholder(R.drawable.blogs_default)
+            crossfade(true)
         }
 
 

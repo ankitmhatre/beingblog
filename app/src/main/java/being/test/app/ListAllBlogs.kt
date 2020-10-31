@@ -2,8 +2,12 @@ package being.test.app
 
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +29,7 @@ class ListAllBlogs : AppCompatActivity() {
     internal var query = ""
 
     private lateinit var thats_embarassing: TextView
+    private lateinit var search_blogs_et: EditText
     private lateinit var avi: AVLoadingIndicatorView
 
     private var globalViewModel: GlobalViewModel? = null
@@ -76,8 +81,37 @@ class ListAllBlogs : AppCompatActivity() {
 
     private fun settingUpIds() {
         thats_embarassing = findViewById<View>(R.id.thats_embarassing) as TextView
+        search_blogs_et = findViewById<View>(R.id.search_blogs_et) as EditText
         refreshView = findViewById<View>(R.id.swipeRefreshBlogs) as SwipeRefreshLayout
+search_blogs_et.addTextChangedListener(object : TextWatcher{
+    override fun afterTextChanged(p0: Editable?) {
 
+    }
+
+    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+    }
+
+    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        populateListArray(p0.toString())
+    }
+})
+        search_blogs_et.setOnTouchListener(object : View.OnTouchListener{
+            override fun onTouch(p0: View?, event: MotionEvent): Boolean {
+
+                val DRAWABLE_RIGHT = 2
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (search_blogs_et.getRight() - search_blogs_et.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        search_blogs_et.text.clear()
+
+                        return true;
+                    }
+                }
+                return false;
+
+            }
+        })
         refreshView.setOnRefreshListener {
             refreshListCall()
         }
@@ -104,9 +138,7 @@ class ListAllBlogs : AppCompatActivity() {
 
                             //Log.d(TAG, "timestamp check ${obj.data.get("reported_on")} ${Utilities.getTimestampFrom(10)}")
                             val tempMap: Map<String, Any> = obj.data
-                            if (tempMap.get("isVerified") as Boolean && ((tempMap.get("reported_on") as Long) > Utilities.getTimestampFrom(
-                                    10
-                                ))
+                            if ((tempMap.get("reported_on") as Long) > Utilities.getTimestampFrom(100)
                             ) {
 
                                 Log.d(TAG, " Verified")
@@ -120,19 +152,17 @@ class ListAllBlogs : AppCompatActivity() {
 
 
                                     val BlogsItem = BlogItem(
-                                        tempMap.get("nid") as Long,
+                                        tempMap.get("blog_id") as Long,
                                         fullUrl as String,
                                         tempMap.get("content") as String,
                                         tempMap.get("title") as String,
                                         tempMap.get("author_name") as String,
                                         tempMap.get("reported_on") as Long,
-                                        tempMap.get("availability") as String,
-                                        "${tempMap.get("category_id")}",
-                                        tempMap.get("media_type") as String,
+                                        tempMap.get("availability") as Boolean,
                                         0
                                     )
 
-                                    if ((tempMap.get("availability") as String).equals("available")) {
+                                    if (tempMap.get("availability") as Boolean) {
                                         try {
                                             var fullUrl: String? = null
                                             val storage = FirebaseStorage.getInstance()
@@ -144,19 +174,17 @@ class ListAllBlogs : AppCompatActivity() {
 
 
                                                 val BlogsItem = BlogItem(
-                                                    tempMap.get("nid") as Long,
+                                                    tempMap.get("blog_id") as Long,
                                                     fullUrl as String,
                                                     tempMap.get("content") as String,
                                                     tempMap.get("title") as String,
                                                     tempMap.get("author_name") as String,
                                                     tempMap.get("reported_on") as Long,
-                                                    tempMap.get("availability") as String,
-                                                    "${tempMap.get("category_id")}",
-                                                    tempMap.get("media_type") as String,
+                                                    tempMap.get("availability") as Boolean,
                                                     0
                                                 )
 
-                                                if ((tempMap.get("availability") as String).equals("available")) {
+                                                if (tempMap.get("availability") as Boolean) {
                                                     try {
 
 
@@ -171,7 +199,7 @@ class ListAllBlogs : AppCompatActivity() {
 
                                                     try {
                                                         GlobalRepository(application).deleteSpecificBlog(
-                                                            BlogsItem.nid
+                                                            BlogsItem.blog_id
                                                         )
                                                     } catch (e: Exception) {
                                                         Log.d("Blogss", e.toString())
@@ -193,7 +221,7 @@ class ListAllBlogs : AppCompatActivity() {
 
                                         try {
                                             GlobalRepository(application).deleteSpecificBlog(
-                                                BlogsItem.nid
+                                                BlogsItem.blog_id
                                             )
                                         } catch (e: Exception) {
                                             Log.d("Blogss", e.toString())
@@ -264,7 +292,7 @@ class ListAllBlogs : AppCompatActivity() {
                 avi.hide()
                 avi.visibility = View.GONE
                 verticalViewPager.visibility = View.VISIBLE
-                Log.d("Blogsss", Blogs[0].availability + "")
+                Log.d("Blogsss", "${Blogs[0].availability}")
                 blogAdapter.update(Blogs)
                 //verticlePagerAdapter!!.update(Blogs)
 

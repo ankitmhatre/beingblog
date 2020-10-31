@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/new_coordianator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:animateLayoutChanges="true">
 
-
+    <EditText
+        android:id="@+id/search_blogs_et"
+        android:layout_margin="@dimen/text_18"
+        android:textStyle="bold"
+        android:hint="@string/search_here"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@drawable/input_bg"
+        android:padding="8dp"
+android:drawableEnd="@drawable/ic_cancel_24px"
+        />
     <FrameLayout
         android:layout_width="match_parent"
+
         android:layout_height="match_parent"
         android:orientation="vertical">
 
@@ -83,7 +95,7 @@
     </FrameLayout>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>
 
 
 

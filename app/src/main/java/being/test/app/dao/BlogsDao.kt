@@ -12,17 +12,18 @@ interface BlogsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(Blog: BlogItem)
 
+    //TODO("Also search by content")
     @Query("SELECT * FROM BlogItem where title LIKE  '%' || :filter  || '%' ORDER BY timestamp DESC")
     fun getAllBlog(filter: String): LiveData<List<BlogItem>>
 
     @Query("DELETE FROM BlogItem")
     fun deleteAllBlog()
 
-    @Query("SELECT * FROM BlogItem WHERE nid = :BlogId")
+    @Query("SELECT * FROM BlogItem WHERE blog_id = :BlogId")
     fun getBlogItem(BlogId: Long) : LiveData<BlogItem>
 
 
-    @Query("UPDATE BlogItem SET isPinned = :isPin WHERE nid = :BlogId")
+    @Query("UPDATE BlogItem SET isPinned = :isPin WHERE blog_id = :BlogId")
     fun updatePinned(BlogId: Long, isPin: Int)
 
 
@@ -32,10 +33,10 @@ interface BlogsDao {
     @Query("SELECT * FROM BlogItem WHERE timestamp < :suppliedStamp")
     fun getOldBlogThan(suppliedStamp: Long): LiveData<List<BlogItem>>
 
-    @Query("DELETE FROM BlogItem WHERE nid = :BlogId ")
+    @Query("DELETE FROM BlogItem WHERE blog_id = :BlogId ")
     fun deleteThisBlogArticle(BlogId: Long)
 
-    @Query("SELECT isPinned FROM BlogItem WHERE nid = :BlogId")
+    @Query("SELECT isPinned FROM BlogItem WHERE blog_id = :BlogId")
     fun getPinnedStatus(BlogId: Long): LiveData<Int>
 
 

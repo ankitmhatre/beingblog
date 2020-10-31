@@ -92,12 +92,6 @@ public class GlobalRepository {
 
 
 
-    /**
-     * Async Operations for Nmmt
-     */
-
-
-
     private static class InsertBlogTask extends AsyncTask<BlogItem, Void, Void> {
         private BlogsDao BlogDao;
 

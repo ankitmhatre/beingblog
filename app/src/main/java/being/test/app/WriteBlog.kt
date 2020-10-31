@@ -6,6 +6,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -16,8 +17,10 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.app.ActivityCompat
 import being.test.app.firestoreutils.FirebaseFunctions
 import being.test.app.firestoreutils.FirebaseFunctionsResponse
+import coil.api.load
 
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -32,6 +35,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.Serializable
+import java.util.jar.Manifest
 
 
 class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
@@ -48,7 +52,6 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
     lateinit var reporters_article_input_content: TextInputEditText
     lateinit var reporters_article_pb: ProgressBar
     lateinit var fileName: TextView
-    lateinit var postArticleSpinner: Spinner
     private var media_type = "image"
     lateinit var selectedMedia: String
     var stringcategory = ArrayList<String>()
@@ -69,6 +72,7 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
         reporters_article_send_btn = findViewById(R.id.reporters_article_send_btn)
         reporters_article_input_title = findViewById(R.id.reporters_article_input_title)
         reporters_article_input_content = findViewById(R.id.reporters_article_input_content)
+
 
 
 
@@ -102,23 +106,23 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
 
 
     private fun validateAndUpload() {
-        var newNid = -1
+        var blogId = -1
 
         if (reporters_article_input_title.text!!.length > 5 && reporters_article_input_content.text!!.length > 10) {
             val storageRef = FirebaseStorage.getInstance().reference
 
 
             if (pictureUri != null) {
-                db.collection("data/v1/news")
+                db.collection("data/v1/blogs")
                     .get()
                     .addOnSuccessListener { result ->
 
                         result.forEach {
-                            if (it.get("nid") as Long > newNid) {
-                                newNid = "${it.get("nid")}".toInt()
+                            if (it.get("blog_id") as Long > blogId) {
+                                blogId = "${it.get("blog_id")}".toInt()
                             }
                         }
-                        newNid++
+                        blogId++
 
 
                         val filePath = FirebaseFunctions().getRealPathFromURI(this, pictureUri!!)
@@ -129,7 +133,7 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
                             val extensionFunctionType = Utilities.getMimeType(this, pictureUri)
                             // Log.d("UPLOAD", "${extensionFunctionType}")
                             val newfilename = System.currentTimeMillis()
-                            val riversRef = storageRef.child("news_media/${newfilename}.$extensionFunctionType")
+                            val riversRef = storageRef.child("blogs_media/${newfilename}.$extensionFunctionType")
                             val uploadTask = riversRef.putFile(pictureUri!!)
 
 
@@ -153,21 +157,17 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
 
 
                                     val j = hashMapOf(
-                                        "nid" to newNid,
-                                        "media_type" to media_type,
-                                        "category_name" to postArticleSpinner.selectedItem,
-                                        "category_id" to postArticleSpinner.selectedItemPosition,
-                                        "availability" to "available",
+                                        "blog_id" to blogId,
                                         "media_url" to "${riversRef.path}",
                                         "title" to reporters_article_input_title.text.toString(),
                                         "content" to reporters_article_input_content.text.toString(),
-                                        "isVerified" to false,
-                                        "reported_by" to cUser!!.displayName,
-                                        "reported_on" to (System.currentTimeMillis() / 1000)
+                                        "author_name" to cUser!!.displayName,
+                                        "reported_on" to (System.currentTimeMillis() / 1000),
+                                        "availability" to true
                                     )
 
 
-                                    FirebaseFunctions().addDataToFirestoreDatabase(this, "data/v1/news", j as HashMap<String, Serializable>)
+                                    FirebaseFunctions().addDataToFirestoreDatabase(this, "data/v1/blogs", j as HashMap<String, Serializable>)
 
 
                                 }
@@ -214,28 +214,43 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
     }
 
     private fun openImagePicker() {
-
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        try {
-            startActivityForResult(takePictureIntent, PICK_IMAGE)
-        } catch (e: ActivityNotFoundException) {
-            // display error state to the user
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(Intent.createChooser(intent, getString(R.string.select_a_image)), PICK_IMAGE)
+        }else{
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 290)
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode){
+             290 ->{
+                 if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                     openImagePicker()
+                 }else{
+                     finish()
+                 }
 
+             }
+        }
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-Log.d("dataeeeeeeeeeeeeeeeee", "${resultCode} ${data}")
         super.onActivityResult(requestCode, resultCode, data)
 
-//        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
-//            val imageBitmap = data!!.extras!!.get("data") as Bitmap
-//            reporters_article_upload_imageview.setImageBitmap(imageBitmap)
-//            //pictureUri = data?.data
-//        }
-//
-//
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
+            pictureUri = data?.data
+            Log.d("dataeeeeeeeeeeeeeeeee", "${resultCode} ${data} $pictureUri")
+            reporters_article_upload_imageview.load(pictureUri)
+
+        }
+
+
 
 
     }
