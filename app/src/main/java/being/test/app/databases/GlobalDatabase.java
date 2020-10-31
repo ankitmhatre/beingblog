@@ -9,8 +9,8 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.local.city.dao.BlogsDao;
-import com.local.city.models.BlogItem;
+import being.test.app.dao.BlogsDao;
+import being.test.app.models.BlogItem;
 
 
 @Database(entities = {

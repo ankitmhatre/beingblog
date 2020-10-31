@@ -34,6 +34,8 @@
     <string name="publish">Publish</string>
     <string name="description">Description</string>
     <string name="select_a_image">Select an Image</string>
-
+<string name="article_not_found">No blogs found</string>
     <string name="check_back_later_auth">We have trouble with your account, check back later.</string>
+    <string name="saved_to_bookmarks">Added to Favorites</string>
+    <string name="removed_from_bookmarks">Removed from Favorites</string>
 </resources>

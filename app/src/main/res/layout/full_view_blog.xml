@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/fullViewProgressBar"
+            style="@style/AVLoadingIndicatorView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+
+            android:visibility="visible"
+            app:indicatorColor="@color/colorAccent"
+            app:indicatorName="LineScalePulseOutIndicator" />
+
+        <TextView
+            android:id="@+id/warningFullViewText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/fullViewProgressBar"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/circular_font"
+            android:gravity="center"
+            android:visibility="gone"
+
+            android:text="@string/article_not_found"
+            android:textColor="@color/colorPrimary"
+            android:textSize="36sp" />
+
+
+        <RelativeLayout
+            android:id="@+id/rootView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <RelativeLayout
+                android:id="@+id/fullViewContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ScrollView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="64dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:id="@+id/newsRoot">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="280dp">
+
+
+
+                                <ImageView
+                                    android:id="@+id/full_image_news"
+                                    android:layout_width="match_parent"
+
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:transitionName="full_imageview_transtion"
+
+                                    app:srcCompat="@drawable/blogs_default" />
+
+                            </RelativeLayout>
+
+
+                            <TextView
+                                android:id="@+id/full_title_news"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:fontFamily="@font/lineto_circular_black"
+                                android:maxLines="4"
+
+                                android:paddingStart="12dp"
+                                android:paddingEnd="12dp"
+                                android:text="@string/title"
+                                android:textColor="?attr/colorPrimary"
+                                android:textSize="36sp"
+                                android:textStyle="bold"
+                                android:transitionName="full_imageview_transtion" />
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingEnd="12dp">
+
+
+                                <TextView
+                                    android:id="@+id/full_reported_by_news"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="16dp"
+                                    android:paddingLeft="16dp"
+                                    android:paddingRight="16dp"
+                                    android:fontFamily="@font/lineto_circular_black"
+                                    android:text="@string/author"
+                                    android:textColor="?attr/colorPrimaryDark"
+                                    android:textStyle="italic" />
+
+                            </LinearLayout>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="0.5"
+                            android:orientation="vertical"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp">
+
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/full_content_news"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginTop="12dp"
+                                android:layout_marginEnd="4dp">
+
+                                <TextView
+                                    android:id="@+id/full_reported_by_news2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:visibility="gone"
+                                    android:layout_marginTop="0dp"
+                                    android:fontFamily="@font/lineto_circular_black"
+                                    android:text="@string/author"
+                                    android:textColor="?attr/colorPrimaryDark"
+                                    android:textStyle="italic" />
+
+                                <TextView
+                                    android:id="@+id/full_reported_on_news"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="end"
+                                    android:gravity="end"
+                                    android:text="Time" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:id="@+id/full_content_news"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/lineto_circular_book"
+                                android:text="Content"
+                                android:visibility="gone"
+
+                                />
+
+                            <WebView
+                                android:id="@+id/contentWebview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+                </ScrollView>
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/full_news_bookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:clickable="true"
+        android:backgroundTint="@color/colorPrimary"
+      android:layout_margin="@dimen/activity_horizontal_margin"
+        app:fabSize="normal"
+        app:layout_anchorGravity="bottom"
+        app:srcCompat="@drawable/ic_star_border"
+        app:useCompatPadding="true" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

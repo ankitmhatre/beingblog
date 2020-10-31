@@ -62,7 +62,25 @@ role = "admin"
         if (user != null) {
             // User is signed in
             toggleVisibility()
-            startActivityForResult(Intent(this@LoginActivity, DashboardHome::class.java), 990)
+
+
+            if(role.equals("admin")){
+                startActivityForResult(
+                    Intent(
+                        this@LoginActivity,
+                        DashboardHome::class.java
+                    ), 990
+                )
+            }else{
+                startActivityForResult(
+                    Intent(
+                        this@LoginActivity,
+                        ListAllBlogs::class.java
+                    ), 990
+                )
+            }
+
+
         }
 
 
@@ -100,45 +118,7 @@ role = "admin"
         toggleVisibility()
         hideKeyboard(this)
 
-
-//        val rplogin = API.getClient().create(ApiInterface::class.java).reporterLogin(uname, pass)
-//        rplogin.enqueue(object : Callback<ReportersLoginReponse> {
-//            override fun onFailure(call: Call<ReportersLoginReponse>, t: Throwable) {
-//                Log.d("reportersResponse", t.message)
-//                toggleVisibility()
-//            }
-//
-//            override fun onResponse(call: Call<ReportersLoginReponse>, response: Response<ReportersLoginReponse>) {
-//                toggleVisibility()
-//                if (response.body()!!.status.equals("success")) {
-//                    //success
-//                    val b = Intent(this@LoginActivity, ReportersArticleActivity::class.java)
-//                    b.putExtra("status", response.body()!!.status)
-//                    b.putExtra("username", response.body()!!.username)
-//                    b.putExtra("id", response.body()!!.id)
-//                    b.putExtra("acc_type", response.body()!!.acc_type)
-//                    b.putExtra("full_name", response.body()!!.full_name)
-//                    b.putExtra("token", response.body()!!.token)
-//                    b.putExtra("valid_till", response.body()!!.valid_till)
-//
-//                    PrefUtils.setString(this@LoginActivity, "reporter_uname", uname)
-//                    PrefUtils.setString(this@LoginActivity, "reporter_pass", pass)
-//
-//
-//                    startActivityForResult(b, 990)
-//                } else {
-//                    //fail
-//                    Snackbar.make(findViewById(android.R.id.content),
-//                            getString(R.string.failed), Snackbar.LENGTH_SHORT).show()
-//                    PrefUtils.setString(this@LoginActivity, "reporter_uname", "")
-//                    PrefUtils.setString(this@LoginActivity, "reporter_pass", "")
-//
-//
-//                }
-//
-//            }
-//        })
-    }
+  }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -181,12 +161,23 @@ role = "admin"
                                 )
 //TODO("Handle all scenarios here")
                                 PrefUtils.setString(this@LoginActivity, PrefKeys.USER_ACC_TYPE,  role)
-                                startActivityForResult(
-                                    Intent(
-                                        this@LoginActivity,
-                                        DashboardHome::class.java
-                                    ), 990
-                                )
+
+                                if(role.equals("admin")){
+                                    startActivityForResult(
+                                        Intent(
+                                            this@LoginActivity,
+                                            DashboardHome::class.java
+                                        ), 990
+                                    )
+                                }else{
+                                    startActivityForResult(
+                                        Intent(
+                                            this@LoginActivity,
+                                            ListAllBlogs::class.java
+                                        ), 990
+                                    )
+                                }
+
 
 
                             }

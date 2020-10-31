@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.api.load
 import coil.request.CachePolicy
 import coil.transform.RoundedCornersTransformation
-import com.local.city.models.BlogItem
+import being.test.app.models.BlogItem
 
 
 class BlogAdapter(val activity: Activity) : RecyclerView.Adapter<BlogAdapter.MyViewHolder>() {
@@ -48,7 +48,6 @@ class BlogAdapter(val activity: Activity) : RecyclerView.Adapter<BlogAdapter.MyV
 
 
     fun update(BlogItems: List<BlogItem>) {
-        Log.d("BlogItemResponse", BlogItems.toString() + "ad")
         this.BlogItems = BlogItems
         notifyDataSetChanged()
     }
@@ -91,7 +90,7 @@ class BlogAdapter(val activity: Activity) : RecyclerView.Adapter<BlogAdapter.MyV
             bundle.putExtra("img_url", BlogItems[position].image_url)
             bundle.putExtra("blog_id", BlogItems[position].blog_id)
             bundle.putExtra("isPinned", BlogItems[position].isPinned)
-            bundle.putExtra("BlogItem", BlogItems[position])
+            bundle.putExtra("blogItem", BlogItems[position])
             activity.startActivity(bundle)
 
         }

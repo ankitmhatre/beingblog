@@ -1,11 +1,11 @@
-package com.local.city.dao
+package being.test.app.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.local.city.models.BlogItem
+import being.test.app.models.BlogItem
 
 @Dao
 interface BlogsDao {

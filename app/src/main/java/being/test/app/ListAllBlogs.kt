@@ -21,7 +21,7 @@ import being.test.app.viewmodel.GlobalViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.local.city.models.BlogItem
+import being.test.app.models.BlogItem
 import com.wang.avi.AVLoadingIndicatorView
 
 class ListAllBlogs : AppCompatActivity() {

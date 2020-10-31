@@ -1,4 +1,4 @@
-package com.local.city.models
+package being.test.app.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

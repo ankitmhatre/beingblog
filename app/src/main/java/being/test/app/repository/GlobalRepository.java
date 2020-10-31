@@ -6,12 +6,13 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.local.city.dao.BlogsDao;
-import com.local.city.models.BlogItem;
+import being.test.app.dao.BlogsDao;
+
 
 import java.util.List;
 
 import being.test.app.databases.GlobalDatabase;
+import being.test.app.models.BlogItem;
 
 public class GlobalRepository {
 

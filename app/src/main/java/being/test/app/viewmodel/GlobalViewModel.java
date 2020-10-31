@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.local.city.models.BlogItem;
+import being.test.app.models.BlogItem;
 
 
 import java.util.List;
