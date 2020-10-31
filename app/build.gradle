@@ -55,6 +55,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01'
     kapt "androidx.room:room-compiler:$room_version"
     kapt "android.arch.persistence.room:compiler:1.1.1"
+    implementation 'com.afollestad.material-dialogs:core:3.3.0'
 
     implementation 'com.google.firebase:firebase-storage:19.2.0'
     implementation 'com.firebaseui:firebase-ui-auth:4.3.1'

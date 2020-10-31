@@ -24,6 +24,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import being.test.app.models.BlogItem
+import com.afollestad.materialdialogs.MaterialDialog
+import com.google.firebase.auth.FirebaseAuth
 import com.wang.avi.AVLoadingIndicatorView
 
 class ListAllBlogs : AppCompatActivity() {
@@ -43,6 +45,7 @@ class ListAllBlogs : AppCompatActivity() {
     lateinit var navController: NavController
     lateinit var refreshView: SwipeRefreshLayout
     lateinit var favoritesIcon: ImageButton
+    lateinit var logoutButton: ImageButton
     lateinit var apiInterface: ApiInterface
     lateinit var rootView: View
     private val TAG = ListAllBlogs::class.java.simpleName
@@ -87,8 +90,25 @@ class ListAllBlogs : AppCompatActivity() {
         search_blogs_et = findViewById<View>(R.id.search_blogs_et) as EditText
         refreshView = findViewById<View>(R.id.swipeRefreshBlogs) as SwipeRefreshLayout
         favoritesIcon =  findViewById<ImageButton>(R.id.favoritesIcon) as ImageButton
+        logoutButton =  findViewById<ImageButton>(R.id.logoutButton) as ImageButton
         favoritesIcon.setOnClickListener {
             startActivity(Intent(this@ListAllBlogs, ShowFavoritesActivity::class.java))
+        }
+        logoutButton.setOnClickListener {
+            MaterialDialog(this).show {
+                title(R.string.Logout)
+                message(R.string.are_your_sure_logout)
+                positiveButton(R.string.logout) { dialog ->
+                   val a =  FirebaseAuth.getInstance()
+                a.signOut()
+                    PrefUtils.setString(this@ListAllBlogs, PrefKeys.USER_ACC_TYPE, null)
+                    startActivity(Intent(this@ListAllBlogs, LoginActivity::class.java))
+                }
+                negativeButton(R.string.cancel) { dialog ->
+                    dismiss()
+                }
+            }
+
         }
 search_blogs_et.addTextChangedListener(object : TextWatcher{
     override fun afterTextChanged(p0: Editable?) {

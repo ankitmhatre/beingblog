@@ -20,7 +20,7 @@
             android:hint="@string/search_here"
             android:layout_width="0dp"
             android:padding="8dp"
-            android:layout_weight="0.9"
+            android:layout_weight="0.8"
             android:layout_height="?actionBarSize"
             android:background="@drawable/input_bg"
 
@@ -35,6 +35,15 @@
     android:layout_gravity="center"
     android:src="@drawable/ic_star"
     android:layout_height="match_parent" />
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_weight="0.1"
+            android:id="@+id/logoutButton"
+            android:layout_marginBottom="8dp"
+            android:background="@color/fui_transparent"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_power_settings_new_24px"
+            android:layout_height="match_parent" />
     </LinearLayout>
     <FrameLayout
         android:layout_width="match_parent"

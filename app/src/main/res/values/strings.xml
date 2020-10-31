@@ -16,7 +16,7 @@
     <string name="write">Create</string>
     <string name="read">Read</string>
     <string name="favourite">Favourites</string>
-    <string name="no_news_greet">Available soon</string>
+    <string name="no_news_greet">You might want to check back later</string>
     <string name="successfully_updated">Successfully updated</string>
     <string name="dummy_blog_title">New here many lines and then i dont know man just click and fuck up  </string>
     <string name="title">Title</string>
@@ -39,4 +39,8 @@
     <string name="saved_to_bookmarks">Added to Favorites</string>
     <string name="removed_from_bookmarks">Removed from Favorites</string>
     <string name="pin_board">Pin Board</string>
+    <string name="logout">Logout</string>
+    <string name="cancel">Cancel</string>
+    <string name="Logout">Logout</string>
+    <string name="are_your_sure_logout">Are you sure you want to logout?</string>
 </resources>
