@@ -137,28 +137,20 @@ role = "admin"
                         // Successfully signed in
                         val user = FirebaseAuth.getInstance().currentUser
                         Log.d(TAG, "user = $user")
-                        // Create a new user with a first and last name
 
-                        // Create a new user with a first and last name
-                        // Create a new user with a first and last name
                         val firestoreUserData = hashMapOf(
                             "uid" to user!!.uid,
                             "name" to user.displayName,
                             "email" to user.email,
-                            "role" to role
+                            "role" to role,
+                            "status" to "active"
                         )
 
-
-// Add a new document with a generated ID
-
-// Add a new document with a generated ID
                         db.collection("users")
-                            .add(firestoreUserData)
+                            .document(user.uid)
+                            .set(firestoreUserData)
                             .addOnSuccessListener { documentReference ->
-                                Log.d(
-                                    TAG,
-                                    "DocumentSnapshot added with ID: " + documentReference.id
-                                )
+
 //TODO("Handle all scenarios here")
                                 PrefUtils.setString(this@LoginActivity, PrefKeys.USER_ACC_TYPE,  role)
 

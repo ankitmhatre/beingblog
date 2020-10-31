@@ -28,6 +28,7 @@ class DashboardHome : AppCompatActivity(), View.OnClickListener {
                     a.signOut()
                     PrefUtils.setString(this@DashboardHome, PrefKeys.USER_ACC_TYPE, null)
                     startActivity(Intent(this@DashboardHome, LoginActivity::class.java))
+                    finish()
                 }
                 negativeButton(R.string.cancel) { dialog ->
                     dismiss()

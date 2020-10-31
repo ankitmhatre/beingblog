@@ -103,6 +103,7 @@ class ListAllBlogs : AppCompatActivity() {
                 a.signOut()
                     PrefUtils.setString(this@ListAllBlogs, PrefKeys.USER_ACC_TYPE, null)
                     startActivity(Intent(this@ListAllBlogs, LoginActivity::class.java))
+                    finish()
                 }
                 negativeButton(R.string.cancel) { dialog ->
                     dismiss()
