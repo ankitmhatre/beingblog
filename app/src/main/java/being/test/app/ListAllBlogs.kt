@@ -1,6 +1,7 @@
 package being.test.app
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,6 +9,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -40,6 +42,7 @@ class ListAllBlogs : AppCompatActivity() {
     lateinit var verticalViewPager: RecyclerView
     lateinit var navController: NavController
     lateinit var refreshView: SwipeRefreshLayout
+    lateinit var favoritesIcon: ImageButton
     lateinit var apiInterface: ApiInterface
     lateinit var rootView: View
     private val TAG = ListAllBlogs::class.java.simpleName
@@ -83,6 +86,10 @@ class ListAllBlogs : AppCompatActivity() {
         thats_embarassing = findViewById<View>(R.id.thats_embarassing) as TextView
         search_blogs_et = findViewById<View>(R.id.search_blogs_et) as EditText
         refreshView = findViewById<View>(R.id.swipeRefreshBlogs) as SwipeRefreshLayout
+        favoritesIcon =  findViewById<ImageButton>(R.id.favoritesIcon) as ImageButton
+        favoritesIcon.setOnClickListener {
+            startActivity(Intent(this@ListAllBlogs, ShowFavoritesActivity::class.java))
+        }
 search_blogs_et.addTextChangedListener(object : TextWatcher{
     override fun afterTextChanged(p0: Editable?) {
 
@@ -151,7 +158,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
                                     fullUrl = "${it.scheme}://${it.host}${it.encodedPath}?alt=media"
 
 
-                                    val BlogsItem = BlogItem(
+                                    val blogItem = BlogItem(
                                         tempMap.get("blog_id") as Long,
                                         fullUrl as String,
                                         tempMap.get("content") as String,
@@ -173,7 +180,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
                                                     "${it.scheme}://${it.host}${it.encodedPath}?alt=media"
 
 
-                                                val BlogsItem = BlogItem(
+                                                val blogItem = BlogItem(
                                                     tempMap.get("blog_id") as Long,
                                                     fullUrl as String,
                                                     tempMap.get("content") as String,
@@ -189,7 +196,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
 
 
                                                         GlobalRepository(application).insertBlog(
-                                                            BlogsItem
+                                                            blogItem
                                                         )
                                                     } catch (e: Exception) {
                                                         e.printStackTrace()
@@ -199,7 +206,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
 
                                                     try {
                                                         GlobalRepository(application).deleteSpecificBlog(
-                                                            BlogsItem.blog_id
+                                                            blogItem.blog_id
                                                         )
                                                     } catch (e: Exception) {
                                                         Log.d("Blogss", e.toString())
@@ -221,7 +228,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
 
                                         try {
                                             GlobalRepository(application).deleteSpecificBlog(
-                                                BlogsItem.blog_id
+                                                blogItem.blog_id
                                             )
                                         } catch (e: Exception) {
                                             Log.d("Blogss", e.toString())

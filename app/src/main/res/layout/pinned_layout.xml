@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="12dp"
+    android:paddingLeft="12dp"
+    android:paddingEnd="12dp"
+
+    android:paddingRight="12dp">
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:fontFamily="sans-serif-smallcaps"
+        android:gravity="center_vertical"
+        android:text="@string/pin_board"
+        android:textColor="#000"
+        android:textSize="36sp"
+        android:textStyle="bold" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pinned_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/text_18" />
+
+    <ImageView
+        android:id="@+id/no_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="72dp"
+        android:padding="72dp"
+        android:src="@drawable/zero_items"
+        android:tint="@color/colorGrey"
+        android:tintMode="multiply" />
+</RelativeLayout>

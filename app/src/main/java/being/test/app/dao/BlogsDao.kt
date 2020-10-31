@@ -9,7 +9,7 @@ import being.test.app.models.BlogItem
 
 @Dao
 interface BlogsDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(Blog: BlogItem)
 
     //TODO("Also search by content")
