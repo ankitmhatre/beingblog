@@ -13,6 +13,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -194,17 +195,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
                                     fullUrl = "${it.scheme}://${it.host}${it.encodedPath}?alt=media"
 
 
-                                    val blogItem = BlogItem(
-                                        tempMap.get("blog_id") as Long,
-                                        fullUrl as String,
-                                        tempMap.get("content") as String,
-                                        tempMap.get("title") as String,
-                                        tempMap.get("author_name") as String,
-                                        tempMap.get("reported_on") as Long,
-                                        tempMap.get("availability") as Boolean,
-                                        0,
-                                        tempMap.get("document_key") as String
-                                    )
+
 
                                     if (tempMap.get("availability") as Boolean) {
                                         try {
@@ -217,7 +208,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
                                                     "${it.scheme}://${it.host}${it.encodedPath}?alt=media"
 
 
-                                                val blogItem = BlogItem(
+                                                val blogItemssssss = BlogItem(
                                                     tempMap.get("blog_id") as Long,
                                                     fullUrl as String,
                                                     tempMap.get("content") as String,
@@ -229,28 +220,13 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
                                                     tempMap.get("document_key") as String
                                                 )
 
-                                                if (tempMap.get("availability") as Boolean) {
-                                                    try {
+
+                                                GlobalRepository(application).insertBlog(
+                                                    blogItemssssss
+                                                )
+                                                Log.d(TAG, " 44444 $blogItemssssss." )
 
 
-                                                        GlobalRepository(application).insertBlog(
-                                                            blogItem
-                                                        )
-                                                    } catch (e: Exception) {
-                                                        e.printStackTrace()
-                                                    }
-
-                                                } else {
-
-                                                    try {
-                                                        GlobalRepository(application).deleteSpecificBlog(
-                                                            blogItem.blog_id
-                                                        )
-                                                    } catch (e: Exception) {
-                                                        Log.d("Blogss", e.toString())
-                                                    }
-
-                                                }
 
 
                                             }.addOnFailureListener {
@@ -266,7 +242,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
 
                                         try {
                                             GlobalRepository(application).deleteSpecificBlog(
-                                                blogItem.blog_id
+                                                tempMap.get("document_key") as String
                                             )
                                         } catch (e: Exception) {
                                             Log.d("Blogss", e.toString())

@@ -18,6 +18,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.app.ActivityCompat
 import being.test.app.firestoreutils.FirebaseFunctions
 import being.test.app.firestoreutils.FirebaseFunctionsResponse
+import being.test.app.models.BlogItem
 import coil.api.load
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -36,7 +37,7 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
     val PICK_AUDIO = 829
     private var TAG = WriteBlog::class.java.simpleName
     lateinit var reporters_article_upload_imageview: AppCompatImageView
-    lateinit var camera_button :ColorCircle
+    lateinit var camera_button: ColorCircle
     lateinit var reporters_article_posting_as: TextView
     private var pictureUri: Uri? = null
     lateinit var reporters_article_send_btn: Button
@@ -45,15 +46,25 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
     lateinit var reporters_article_pb: ProgressBar
     lateinit var fileName: TextView
     private var media_type = "image"
+    var alreadyBlogItem: BlogItem? = null
     lateinit var selectedMedia: String
     var stringcategory = ArrayList<String>()
     lateinit var user: FirebaseUser
     val db = FirebaseFirestore.getInstance()
     val fbAuth = FirebaseAuth.getInstance()
+    var blogId: Long = -1
 
+
+    override fun onNewIntent(intent: Intent?) {
+        alreadyBlogItem = null
+        super.onNewIntent(intent)
+        setIntent(intent)
+        freshData(intent!!)
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        alreadyBlogItem = null
         super.onCreate(savedInstanceState)
         setContentView(R.layout.write_blog_layout)
         user = fbAuth.currentUser as FirebaseUser
@@ -93,104 +104,255 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
             media_type = "image"
         }
 
+        freshData(intent)
+    }
 
+    fun freshData(i: Intent) {
+        try {
+            alreadyBlogItem = i.extras?.get("blogItem") as BlogItem
+
+            if (alreadyBlogItem != null){
+                blogId = alreadyBlogItem!!.blog_id
+                thisisthearticle(alreadyBlogItem!!)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+
+        }
+    }
+
+    private fun thisisthearticle(blogItem: BlogItem) {
+
+
+        reporters_article_input_title.setText(blogItem.title)
+        reporters_article_input_content.setText(blogItem.content)
+        reporters_article_posting_as.setText(blogItem.author_name)
+        reporters_article_upload_imageview.load(blogItem.image_url)
     }
 
 
     private fun validateAndUpload() {
-        var blogId = -1
+
 
         if (reporters_article_input_title.text!!.length > 5 && reporters_article_input_content.text!!.length > 10) {
             val storageRef = FirebaseStorage.getInstance().reference
 
 
-            if (pictureUri != null) {
-                db.collection("data/v1/blogs")
-                    .get()
-                    .addOnSuccessListener { result ->
+            if (alreadyBlogItem != null) {
 
-                        result.forEach {
-                            if (it.get("blog_id") as Long > blogId) {
-                                blogId = "${it.get("blog_id")}".toInt()
+                if (pictureUri != null) {
+                    db.collection("data/v1/blogs")
+                        .get()
+                        .addOnSuccessListener { result ->
+
+                            result.forEach {
+                                if (it.get("blog_id") as Long > blogId) {
+                                    blogId = "${it.get("blog_id")}".toLong()
+                                }
                             }
-                        }
-                        blogId++
+                            blogId++
 
 
-                        val filePath = FirebaseFunctions().getRealPathFromURI(this, pictureUri!!)
-                        if (filePath != null) {
-                            val file = File(filePath)
+                            val filePath =
+                                FirebaseFunctions().getRealPathFromURI(this, pictureUri!!)
+                            if (filePath != null) {
+                                val file = File(filePath)
 
 
-                            val extensionFunctionType = Utilities.getMimeType(this, pictureUri)
-                            // Log.d("UPLOAD", "${extensionFunctionType}")
-                            val newfilename = System.currentTimeMillis()
-                            val riversRef = storageRef.child("blogs_media/${newfilename}.$extensionFunctionType")
-                            val uploadTask = riversRef.putFile(pictureUri!!)
+                                val extensionFunctionType = Utilities.getMimeType(this, pictureUri)
+                                // Log.d("UPLOAD", "${extensionFunctionType}")
+                                val newfilename = System.currentTimeMillis()
+                                val riversRef =
+                                    storageRef.child("blogs_media/${newfilename}.$extensionFunctionType")
+                                val uploadTask = riversRef.putFile(pictureUri!!)
 
 
 // Register observers to listen for when the download is done or if it fails
-                            uploadTask
-                                .addOnFailureListener {
-                                    // Handle unsuccessful uploads
-                                    reporters_article_pb.visibility = View.GONE
-                                    reporters_article_send_btn.isEnabled = true
-                                    reporters_article_send_btn.visibility = View.VISIBLE
-                                    //failed
-                                }
-                                .addOnSuccessListener {
-                                    // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-                                    // ...
-                                    val a = File(it.uploadSessionUri?.encodedPath)
-                                    Log.d("Uploaded", "$a")
-                                    Log.d("Uploaded", "${riversRef.path}")
-                                    Log.d("Uploaded", "${it.uploadSessionUri}")
-                                    val cUser = FirebaseAuth.getInstance().currentUser
+                                uploadTask
+                                    .addOnFailureListener {
+                                        // Handle unsuccessful uploads
+                                        reporters_article_pb.visibility = View.GONE
+                                        reporters_article_send_btn.isEnabled = true
+                                        reporters_article_send_btn.visibility = View.VISIBLE
+                                        //failed
+                                    }
+                                    .addOnSuccessListener {
+                                        // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+                                        // ...
+                                        val a = File(it.uploadSessionUri?.encodedPath)
+                                        Log.d("Uploaded", "$a")
+                                        Log.d("Uploaded", "${riversRef.path}")
+                                        Log.d("Uploaded", "${it.uploadSessionUri}")
+                                        val cUser = FirebaseAuth.getInstance().currentUser
 
 
-                                    val j = hashMapOf(
-                                        "blog_id" to blogId,
-                                        "media_url" to "${riversRef.path}",
-                                        "title" to reporters_article_input_title.text.toString(),
-                                        "content" to reporters_article_input_content.text.toString(),
-                                        "author_name" to cUser!!.displayName,
-                                        "reported_on" to (System.currentTimeMillis() / 1000),
-                                        "availability" to true
-                                    )
+                                        val j = mapOf(
+                                            "media_url" to "${riversRef.path}",
+                                            "title" to reporters_article_input_title.text.toString(),
+                                            "content" to reporters_article_input_content.text.toString(),
+                                            "updated_on" to (System.currentTimeMillis() / 1000),
+                                            "document_key" to alreadyBlogItem!!.document_key
+                                        )
 
 
-                                    FirebaseFunctions().addDataToFirestoreDatabase(this, "data/v1/blogs", j as HashMap<String, Serializable>)
+                                        FirebaseFunctions().updateDataToFirestoreDatabase(
+                                            this,
+                                            "data/v1/blogs",
+                                            j as Map<String, Serializable>
+                                        )
 
 
-                                }
+                                    }
 
 
-                        } else {
-                            reporters_article_pb.visibility = View.GONE
-                            reporters_article_send_btn.visibility = View.VISIBLE
-                            Snackbar.make(this.findViewById(android.R.id.content),
-                                getString(R.string.please_upload_image), Snackbar.LENGTH_SHORT).show()
-                            reporters_article_send_btn.isEnabled = true
+                            } else {
+                                reporters_article_pb.visibility = View.GONE
+                                reporters_article_send_btn.visibility = View.VISIBLE
+                                Snackbar.make(
+                                    this.findViewById(android.R.id.content),
+                                    getString(R.string.please_upload_image), Snackbar.LENGTH_SHORT
+                                ).show()
+                                reporters_article_send_btn.isEnabled = true
+
+                            }
+
 
                         }
+                        .addOnFailureListener { e ->
+                            reporters_article_send_btn.isEnabled = true
+                            reporters_article_pb.visibility = View.GONE
+                            reporters_article_send_btn.visibility = View.VISIBLE
+                            Log.w(TAG, "Error adding document", e)
+                            Snackbar.make(
+                                this.findViewById(android.R.id.content),
+                                "Failed ${e.message}", Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                } else {
 
 
-                    }
-                    .addOnFailureListener { e ->
-                        reporters_article_send_btn.isEnabled = true
-                        reporters_article_pb.visibility = View.GONE
-                        reporters_article_send_btn.visibility = View.VISIBLE
-                        Log.w(TAG, "Error adding document", e)
-                        Snackbar.make(this.findViewById(android.R.id.content),
-                            "Failed ${e.message}", Snackbar.LENGTH_SHORT).show()
-                    }
+                    val j = mapOf(
+                        "title" to reporters_article_input_title.text.toString(),
+                        "content" to reporters_article_input_content.text.toString(),
+                        "updated_on" to (System.currentTimeMillis() / 1000),
+                        "document_key" to alreadyBlogItem!!.document_key
+                    )
+
+
+                    FirebaseFunctions().updateDataToFirestoreDatabase(
+                        this,
+                        "data/v1/blogs",
+                        j as Map<String, Serializable>
+                    )
+
+                }
+
+
             } else {
-                reporters_article_pb.visibility = View.GONE
-                reporters_article_send_btn.visibility = View.VISIBLE
-                Snackbar.make(this.findViewById(android.R.id.content),
-                    getString(R.string.select_a_file), Snackbar.LENGTH_SHORT).show()
-                reporters_article_send_btn.isEnabled = true
+                if (pictureUri != null) {
+                    db.collection("data/v1/blogs")
+                        .get()
+                        .addOnSuccessListener { result ->
+
+                            result.forEach {
+                                if (it.get("blog_id") as Long > blogId) {
+                                    blogId = "${it.get("blog_id")}".toLong()
+                                }
+                            }
+                            blogId++
+
+
+                            val filePath =
+                                FirebaseFunctions().getRealPathFromURI(this, pictureUri!!)
+                            if (filePath != null) {
+                                val file = File(filePath)
+
+
+                                val extensionFunctionType = Utilities.getMimeType(this, pictureUri)
+                                // Log.d("UPLOAD", "${extensionFunctionType}")
+                                val newfilename = System.currentTimeMillis()
+                                val riversRef =
+                                    storageRef.child("blogs_media/${newfilename}.$extensionFunctionType")
+                                val uploadTask = riversRef.putFile(pictureUri!!)
+
+
+// Register observers to listen for when the download is done or if it fails
+                                uploadTask
+                                    .addOnFailureListener {
+                                        // Handle unsuccessful uploads
+                                        reporters_article_pb.visibility = View.GONE
+                                        reporters_article_send_btn.isEnabled = true
+                                        reporters_article_send_btn.visibility = View.VISIBLE
+                                        //failed
+                                    }
+                                    .addOnSuccessListener {
+                                        // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+                                        // ...
+                                        val a = File(it.uploadSessionUri?.encodedPath)
+                                        Log.d("Uploaded", "$a")
+                                        Log.d("Uploaded", "${riversRef.path}")
+                                        Log.d("Uploaded", "${it.uploadSessionUri}")
+                                        val cUser = FirebaseAuth.getInstance().currentUser
+
+
+                                        val j = hashMapOf(
+                                            "blog_id" to blogId,
+                                            "media_url" to "${riversRef.path}",
+                                            "title" to reporters_article_input_title.text.toString(),
+                                            "content" to reporters_article_input_content.text.toString(),
+                                            "author_name" to cUser!!.displayName,
+                                            "reported_on" to (System.currentTimeMillis() / 1000),
+                                            "availability" to true
+                                        )
+
+
+                                        FirebaseFunctions().addDataToFirestoreDatabase(
+                                            this,
+                                            "data/v1/blogs",
+                                            j as HashMap<String, Serializable>
+                                        )
+
+
+                                    }
+
+
+                            } else {
+                                reporters_article_pb.visibility = View.GONE
+                                reporters_article_send_btn.visibility = View.VISIBLE
+                                Snackbar.make(
+                                    this.findViewById(android.R.id.content),
+                                    getString(R.string.please_upload_image), Snackbar.LENGTH_SHORT
+                                ).show()
+                                reporters_article_send_btn.isEnabled = true
+
+                            }
+
+
+                        }
+                        .addOnFailureListener { e ->
+                            reporters_article_send_btn.isEnabled = true
+                            reporters_article_pb.visibility = View.GONE
+                            reporters_article_send_btn.visibility = View.VISIBLE
+                            Log.w(TAG, "Error adding document", e)
+                            Snackbar.make(
+                                this.findViewById(android.R.id.content),
+                                "Failed ${e.message}", Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                } else {
+                    reporters_article_pb.visibility = View.GONE
+                    reporters_article_send_btn.visibility = View.VISIBLE
+                    Snackbar.make(
+                        this.findViewById(android.R.id.content),
+                        getString(R.string.select_a_file), Snackbar.LENGTH_SHORT
+                    ).show()
+                    reporters_article_send_btn.isEnabled = true
+                }
+
             }
+
+
         } else {
             reporters_article_send_btn.isEnabled = true
             reporters_article_pb.visibility = View.GONE
@@ -259,7 +421,7 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
 
             finish()
         } else {
-            Toast.makeText(this, "Failed", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Failed to add", Toast.LENGTH_LONG).show()
 
         }
 
@@ -270,5 +432,21 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
     override fun firebaseFunctionsResponse(jsonArray: JSONObject?, type: String?) {
     }
 
+    override fun dataUpdateSuccess(successful: Boolean) {
+        Log.d(TAG, "$successful")
+        if (successful) {
+            Toast.makeText(this, getString(R.string.successfully_updated), Toast.LENGTH_LONG).show()
+            reporters_article_input_title.text!!.clear()
+            reporters_article_input_content.text!!.clear()
 
+            finish()
+        } else {
+            Toast.makeText(this, getString(R.string.failed_blog_update), Toast.LENGTH_LONG).show()
+
+        }
+
+        reporters_article_pb.visibility = View.GONE
+        reporters_article_send_btn.visibility = View.VISIBLE
+
+    }
 }

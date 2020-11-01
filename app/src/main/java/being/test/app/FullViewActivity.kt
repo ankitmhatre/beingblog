@@ -98,6 +98,12 @@ class FullViewActivity : AppCompatActivity() {
 
         editBlog.setOnClickListener {
 
+
+
+            val bundle = Intent(this@FullViewActivity, WriteBlog::class.java)
+            bundle.putExtra("blogItem", bookmarkBlogItem)
+            startActivity(bundle)
+
         }
 
         deleteBLog.setOnClickListener {
@@ -113,7 +119,7 @@ class FullViewActivity : AppCompatActivity() {
                         Snackbar.LENGTH_SHORT
                     ).show()
 
-                    GlobalRepository(application).deleteSpecificBlog(bookmarkBlogItem.blog_id)
+                    GlobalRepository(application).deleteSpecificBlog(bookmarkBlogItem.document_key)
 
                 }
                 .addOnFailureListener { e ->

@@ -2,15 +2,12 @@ package being.test.app.repository;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import being.test.app.dao.BlogsDao;
-
-
 import java.util.List;
 
+import being.test.app.dao.BlogsDao;
 import being.test.app.databases.GlobalDatabase;
 import being.test.app.models.BlogItem;
 
@@ -31,7 +28,10 @@ public class GlobalRepository {
         new InsertBlogTask(BlogDao).execute(Blog);
     }
 
- 
+    public void updateBlog(String title, String content, String imageUrl, String docKey) {
+        String[] valll = {title, content, imageUrl, docKey};
+        new UpdateBlogAsync(BlogDao).execute(valll);
+    }
 
 
     public void deleteAllBlog() {
@@ -62,8 +62,8 @@ public class GlobalRepository {
         return BlogDao.getPinnedStatus(BlogId);
     }
 
-    public void deleteSpecificBlog(Long id) {
-        new DeleteSpecificBlog(BlogDao).execute(id);
+    public void deleteSpecificBlog(String documentkey) {
+        new DeleteSpecificBlog(BlogDao).execute(documentkey);
     }
 
     private static class UpdateBlogTask extends AsyncTask<Void, Void, Void> {
@@ -108,7 +108,21 @@ public class GlobalRepository {
         }
     }
 
- 
+    private static class UpdateBlogAsync extends AsyncTask<String, Void, Void> {
+        private BlogsDao BlogDao;
+
+        public UpdateBlogAsync(BlogsDao BlogDao) {
+            this.BlogDao = BlogDao;
+        }
+
+
+        @Override
+        protected Void doInBackground(String... dataaa) {
+            BlogDao.update(dataaa[0], dataaa[1], dataaa[2], dataaa[3]);
+            return null;
+        }
+    }
+
 
     private static class DeleteAllBlog extends AsyncTask<Void, Void, Void> {
         BlogsDao BlogDao;
@@ -124,7 +138,7 @@ public class GlobalRepository {
         }
     }
 
-    private static class DeleteSpecificBlog extends AsyncTask<Long, Void, Void> {
+    private static class DeleteSpecificBlog extends AsyncTask<String, Void, Void> {
         BlogsDao BlogDao;
 
         public DeleteSpecificBlog(BlogsDao BlogDao) {
@@ -132,7 +146,7 @@ public class GlobalRepository {
         }
 
         @Override
-        protected Void doInBackground(Long... voids) {
+        protected Void doInBackground(String... voids) {
             BlogDao.deleteThisBlogArticle(voids[0]);
             return null;
         }

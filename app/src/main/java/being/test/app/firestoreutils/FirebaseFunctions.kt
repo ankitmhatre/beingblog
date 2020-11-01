@@ -39,6 +39,22 @@ class FirebaseFunctions {
             }
     }
 
+    fun updateDataToFirestoreDatabase(firebaseFunctionsResponse: FirebaseFunctionsResponse, collection_name: String, jsonObject: Map<String, Serializable>) {
+        Log.d(TAG, "inside update CollectionDataFron Firbase")
+        val firebaseStoreRoot = FirebaseFirestore.getInstance()
+
+        val documentReference = firebaseStoreRoot.collection(collection_name).document(jsonObject.get("document_key") as String)
+
+
+        documentReference
+            .update(jsonObject)
+            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!")
+                firebaseFunctionsResponse.dataUpdateSuccess(true)}
+            .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e)
+                firebaseFunctionsResponse.dataUpdateSuccess(false)}
+
+    }
+
     fun getDataFromFirestoreDatabase(firebaseFunctionsResponse: FirebaseFunctionsResponse,
                                      collection_name: String,
                                      topic: String) {
