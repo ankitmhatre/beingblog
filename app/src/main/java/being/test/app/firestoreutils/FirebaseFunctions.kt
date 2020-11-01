@@ -181,11 +181,74 @@ class FirebaseFunctions {
             firebaseFunctionsResponse.firebaseFunctionsResponse(globalJSON, type = "")
         }
 
-}
+    }
 
-    fun searchDataFromFirestoreDatabase(firebaseFunctionsResponse: FirebaseFunctionsResponse,
-                                     collection_name: String,
-                                     topic: String) {
+
+    fun getFavoritesFromMyAccount(
+        firebaseFunctionsResponse: FirebaseFunctionsResponse
+    ) {
+        val firebaseStoreRoot = FirebaseFirestore.getInstance()
+        val user = FirebaseAuth.getInstance().currentUser
+
+        var favoriteBLog = mutableListOf<String>()
+        val documentReference = firebaseStoreRoot
+            .collection("users/${user!!.uid}/favorites")
+            .get()
+            .addOnSuccessListener {
+                for (document in it.documents) {
+                    favoriteBLog.addAll(document.data!!.keys.toMutableList())
+
+                }
+                Log.d(
+                    "ahadadad",
+                    "$favoriteBLog")
+                firebaseStoreRoot.collection("data/v1/blogs")
+                    .whereIn("document_key", favoriteBLog)
+                    .addSnapshotListener { snapshot, e ->
+                        if (e != null) {
+                            Log.w(TAG, "Listen failed.", e)
+                            return@addSnapshotListener
+                        }
+
+                        val globalJSON = JSONObject()
+                        val jsonArray = JSONArray()
+
+
+                        snapshot!!.documents.forEach {
+                            Log.d("adasdad", "Current data:  ${it.data}")
+
+
+                            val j = JSONObject()
+                            it.data!!.forEach {
+                                j.put(it.key, it.value)
+                            }
+                            jsonArray.put(j)
+
+
+                        }
+                        try {
+
+                            globalJSON.put("result", jsonArray)
+                        } catch (ex: JSONException) {
+                            ex.printStackTrace()
+                        }
+
+                        firebaseFunctionsResponse.firebaseFunctionsResponse(globalJSON, type = "")
+                    }
+
+            }
+
+
+
+
+
+    }
+
+    fun searchDataFromFirestoreDatabase(
+        firebaseFunctionsResponse: FirebaseFunctionsResponse,
+        collection_name: String,
+        topic: String
+    ) {
 
         val firebaseStoreRoot = FirebaseFirestore.getInstance()
         firebaseStoreRoot.collection(collection_name)

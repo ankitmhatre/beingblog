@@ -93,6 +93,7 @@ class ListAllBlogs : AppCompatActivity(), FirebaseFunctionsResponse {
 
     private fun settingUpIds() {
         thats_embarassing = findViewById<View>(R.id.thats_embarassing) as TextView
+        avi = findViewById<View>(R.id.avi) as AVLoadingIndicatorView
         search_blogs_et = findViewById<View>(R.id.search_blogs_et) as EditText
         refreshView = findViewById<View>(R.id.swipeRefreshBlogs) as SwipeRefreshLayout
         favoritesIcon = findViewById<ImageButton>(R.id.favoritesIcon) as ImageButton
@@ -142,7 +143,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
     override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 //        populateListArray(p0.toString())
         thats_embarassing.visibility = View.GONE
-        avi = findViewById<View>(R.id.avi) as AVLoadingIndicatorView
+
         avi.show()
         avi.visibility = View.VISIBLE
 

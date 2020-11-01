@@ -9,16 +9,21 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import being.test.app.firestoreutils.FirebaseFunctions
+import being.test.app.firestoreutils.FirebaseFunctionsResponse
+import being.test.app.models.BlogItem
 import being.test.app.viewmodel.GlobalViewModel
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
+import java.lang.reflect.Type
 
 
-class ShowFavoritesActivity : AppCompatActivity() {
+class ShowFavoritesActivity : AppCompatActivity(), FirebaseFunctionsResponse {
     lateinit var recyclerView: RecyclerView
     lateinit var rabiit: ImageView
     lateinit var newsAdapterOld: BlogAdapter
@@ -50,30 +55,79 @@ class ShowFavoritesActivity : AppCompatActivity() {
 
     fun populateListArray() {
 
-
-        globalViewModel.getPinnedList("").observeForever { newsItems ->
-            Log.d("newsss Pinned Size", newsItems.size.toString() + "")
-            if (newsItems.size > 0) {
-                rabiit.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
-            } else {
-                rabiit.visibility = View.VISIBLE
-                recyclerView.visibility = View.GONE
-            }
-            newsAdapterOld.update(newsItems)
-        }
-
+        FirebaseFunctions().getFavoritesFromMyAccount(this@ShowFavoritesActivity)
 
     }
 
-    class RecyclerTouchListener(context: Context, recyclerView: RecyclerView, private val clickListener: ShowFavoritesActivity.ClickListener?) : RecyclerView.OnItemTouchListener {
+    override fun firebaseFunctionsResponse(jsonObject: JSONObject?, type: String?) {
+        if (jsonObject != null) {
+
+            try {
+                val gson = GsonBuilder().create()
+                var Blogs = mutableListOf<BlogItem>()
+                val groupListType: Type = object : TypeToken<ArrayList<BlogItem?>?>() {}.getType()
+                val model = gson.fromJson(
+                    jsonObject.getJSONArray("result").toString(),
+                    groupListType
+                ) as ArrayList<BlogItem>;
+                Blogs.addAll(model)
+
+                newsAdapterOld.update(mutableListOf<BlogItem>())
+
+
+                if (Blogs.isNotEmpty()) {
+
+                    recyclerView.visibility = View.VISIBLE
+                    Log.d("blogs from fbstore", "${Blogs}")
+
+                    newsAdapterOld.update(Blogs)
+                    //verticlePagerAdapter!!.update(Blogs)
+                    rabiit.visibility = View.GONE
+                }else{
+                    newsAdapterOld.update(mutableListOf<BlogItem>())
+                    recyclerView.visibility = View.VISIBLE
+                    rabiit.visibility = View.VISIBLE
+
+                }
+            } catch (e: Exception) {
+                newsAdapterOld.update(mutableListOf<BlogItem>())
+                e.printStackTrace()
+                rabiit.visibility = View.VISIBLE
+
+            }
+        }else{
+            rabiit.visibility = View.VISIBLE
+        }
+    }
+
+    override fun dataAddSuccess(successful: Boolean) {
+
+    }
+
+    override fun dataUpdateSuccess(successful: Boolean) {
+
+    }
+
+    override fun checkFavorite(isFavorite: Boolean) {
+
+    }
+
+    override fun toggleFavorite(isFavorite: Boolean) {
+    }
+
+    class RecyclerTouchListener(
+        context: Context,
+        recyclerView: RecyclerView,
+        private val clickListener: ShowFavoritesActivity.ClickListener?
+    ) : RecyclerView.OnItemTouchListener {
 
         private val gestureDetector: GestureDetector
 
         init {
-            gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onSingleTapUp(e: MotionEvent): Boolean {
-                    return true
+            gestureDetector =
+                GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onSingleTapUp(e: MotionEvent): Boolean {
+                        return true
                 }
 
                 override fun onLongPress(e: MotionEvent) {
