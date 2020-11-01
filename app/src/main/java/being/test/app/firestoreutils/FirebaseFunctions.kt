@@ -26,14 +26,17 @@ class FirebaseFunctions {
         Log.d(TAG, "inside Post CollectionDataFron Firbase")
         val firebaseStoreRoot = FirebaseFirestore.getInstance()
 
-        firebaseStoreRoot.collection(collection_name)
-                .add(jsonObject)
-                .addOnSuccessListener { documentReference ->
-                    firebaseFunctionsResponse.dataAddSuccess(true)
-                }
-                .addOnFailureListener { e ->
-                    firebaseFunctionsResponse.dataAddSuccess(false)
-                }
+        val documentReference = firebaseStoreRoot.collection(collection_name).document()
+        jsonObject.put("document_key", documentReference.id)
+        firebaseStoreRoot.collection(collection_name).document(documentReference.id)
+            .set(jsonObject)
+            .addOnSuccessListener { documentReference ->
+
+                firebaseFunctionsResponse.dataAddSuccess(true)
+            }
+            .addOnFailureListener { e ->
+                firebaseFunctionsResponse.dataAddSuccess(false)
+            }
     }
 
     fun getDataFromFirestoreDatabase(firebaseFunctionsResponse: FirebaseFunctionsResponse,

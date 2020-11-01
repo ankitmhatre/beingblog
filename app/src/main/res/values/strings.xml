@@ -38,6 +38,10 @@
     <string name="check_back_later_auth">We have trouble with your account, check back later.</string>
     <string name="saved_to_bookmarks">Added to Favorites</string>
     <string name="removed_from_bookmarks">Removed from Favorites</string>
+    <string name="blog_deleted">Blog has been deleted</string>
+    <string name="failed_blog_deleted">Failed to delete blog</string>
+    <string name="failed_blog_update">Failed to update the blog</string>
+    <string name="blog_updated">Blog has been updated</string>
     <string name="pin_board">Pin Board</string>
     <string name="logout">Logout</string>
     <string name="cancel">Cancel</string>

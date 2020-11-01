@@ -2,40 +2,32 @@ package being.test.app
 
 
 
-import android.app.Activity
-import android.app.ActivityManager
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.app.ActivityCompat
 import being.test.app.firestoreutils.FirebaseFunctions
 import being.test.app.firestoreutils.FirebaseFunctionsResponse
 import coil.api.load
-
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.File
 import java.io.Serializable
-import java.util.jar.Manifest
 
 
 class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {

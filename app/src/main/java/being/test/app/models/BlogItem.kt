@@ -12,6 +12,7 @@ data class BlogItem(
         var blog_id: Long,
         @SerializedName("image")
         var image_url: String,
+
         @SerializedName("content")
         var content: String,
         @SerializedName("title")
@@ -26,6 +27,9 @@ data class BlogItem(
         @SerializedName("availability")
         var availability: Boolean,
 
-        val isPinned: Int = 0
+        val isPinned: Int = 0,
+        @SerializedName("document_key")
+        var document_key: String
+
 
 ) : Serializable

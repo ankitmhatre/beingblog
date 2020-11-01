@@ -64,21 +64,14 @@ role = "admin"
             toggleVisibility()
 
 
-            if(role.equals("admin")){
-                startActivityForResult(
-                    Intent(
-                        this@LoginActivity,
-                        DashboardHome::class.java
-                    ), 990
-                )
-            }else{
+
                 startActivityForResult(
                     Intent(
                         this@LoginActivity,
                         ListAllBlogs::class.java
                     ), 990
                 )
-            }
+
 
 
         }
@@ -154,21 +147,14 @@ role = "admin"
 //TODO("Handle all scenarios here")
                                 PrefUtils.setString(this@LoginActivity, PrefKeys.USER_ACC_TYPE,  role)
 
-                                if(role.equals("admin")){
-                                    startActivityForResult(
-                                        Intent(
-                                            this@LoginActivity,
-                                            DashboardHome::class.java
-                                        ), 990
-                                    )
-                                }else{
+
                                     startActivityForResult(
                                         Intent(
                                             this@LoginActivity,
                                             ListAllBlogs::class.java
                                         ), 990
                                     )
-                                }
+
 
 
 

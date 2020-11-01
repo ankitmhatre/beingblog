@@ -20,12 +20,14 @@ import being.test.app.viewmodel.GlobalViewModel
 import coil.api.load
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.FirebaseFirestore
 import com.wang.avi.AVLoadingIndicatorView
 
 class FullViewActivity : AppCompatActivity() {
     private val TAG = "FullViewActivity"
     lateinit var textView7: TextView
     lateinit var apiInterface: ApiInterface
+    val db = FirebaseFirestore.getInstance()
 
     //lateinit var deepLinkApiInterface: DeepLinkApiInterface
     lateinit var globalViewModel: GlobalViewModel
@@ -40,6 +42,8 @@ class FullViewActivity : AppCompatActivity() {
     lateinit var full_reported_on_news: TextView
     lateinit var full_image_news: ImageView
     lateinit var favoriteBLog: FloatingActionButton
+    lateinit var editBlog: FloatingActionButton
+    lateinit var deleteBLog: FloatingActionButton
     lateinit var parentcontainer: RelativeLayout
     lateinit var progressbar: AVLoadingIndicatorView
     lateinit var rootView: RelativeLayout
@@ -68,17 +72,60 @@ class FullViewActivity : AppCompatActivity() {
         full_reported_on_news = findViewById<TextView>(R.id.full_reported_on_news)
         full_image_news = findViewById<ImageView>(R.id.full_image_news)
         favoriteBLog = findViewById<View>(R.id.full_news_bookmark) as FloatingActionButton
+        editBlog = findViewById<View>(R.id.editBlogFab) as FloatingActionButton
+        deleteBLog = findViewById<View>(R.id.deleteBlogFab) as FloatingActionButton
 
         parentcontainer = findViewById(R.id.fullViewContainer)
         progressbar = findViewById(R.id.fullViewProgressBar)
         warningFullViewText = findViewById<View>(R.id.warningFullViewText) as TextView
         rootView = findViewById<View>(R.id.rootView) as RelativeLayout
+        if (PrefUtils.getString(this@FullViewActivity, PrefKeys.USER_ACC_TYPE, null)
+                .equals("admin")
+        ) {
+            favoriteBLog.visibility = View.GONE
+            editBlog.visibility = View.VISIBLE
+            deleteBLog.visibility = View.VISIBLE
 
-
+        } else {
+            favoriteBLog.visibility = View.VISIBLE
+            editBlog.visibility = View.GONE
+            deleteBLog.visibility = View.GONE
+        }
 
 
         //favoriteBLog.
 
+
+        editBlog.setOnClickListener {
+
+        }
+
+        deleteBLog.setOnClickListener {
+
+
+            db.collection("data/v1/blogs").document(bookmarkBlogItem.document_key)
+                .delete()
+                .addOnSuccessListener {
+                    Log.d(TAG, "DocumentSnapshot successfully deleted!")
+                    Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.blog_deleted),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+
+                    GlobalRepository(application).deleteSpecificBlog(bookmarkBlogItem.blog_id)
+
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Error deleting document", e)
+                    Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.failed_blog_deleted),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+
+                }
+        }
 
         favoriteBLog.setOnClickListener {
             Log.d(TAG, "BlogItem Pinned : ${bookmarkBlogItem.isPinned}")
@@ -132,18 +179,22 @@ class FullViewActivity : AppCompatActivity() {
 
 globalViewModel.getBlogItem(i.extras?.get("blog_id") as Long).observeForever {
 
-    bookmarkBlogItem = it
-    favoriteBLog.setImageDrawable(
-        ContextCompat.getDrawable(
-            this,
-            when(it.isPinned){
-                0 -> R.drawable.ic_star_border
-                1 -> R.drawable.ic_star
-                else -> R.drawable.ic_star_border
-            }
-        )
-    );
-    thisisthearticle(it)
+    if (it != null) {
+        bookmarkBlogItem = it
+        favoriteBLog.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                when (it.isPinned) {
+                    0 -> R.drawable.ic_star_border
+                    1 -> R.drawable.ic_star
+                    else -> R.drawable.ic_star_border
+                }
+            )
+        );
+        thisisthearticle(it)
+    }else{
+        finish()
+    }
 }
 
 

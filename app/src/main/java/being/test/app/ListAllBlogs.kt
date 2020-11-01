@@ -18,14 +18,15 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import being.test.app.models.BlogItem
 import being.test.app.repository.GlobalRepository
 import being.test.app.viewmodel.GlobalViewModel
+import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import being.test.app.models.BlogItem
-import com.afollestad.materialdialogs.MaterialDialog
-import com.google.firebase.auth.FirebaseAuth
 import com.wang.avi.AVLoadingIndicatorView
 
 class ListAllBlogs : AppCompatActivity() {
@@ -44,6 +45,7 @@ class ListAllBlogs : AppCompatActivity() {
     lateinit var verticalViewPager: RecyclerView
     lateinit var navController: NavController
     lateinit var refreshView: SwipeRefreshLayout
+    lateinit var createBlogButton: FloatingActionButton
     lateinit var favoritesIcon: ImageButton
     lateinit var logoutButton: ImageButton
     lateinit var apiInterface: ApiInterface
@@ -89,8 +91,21 @@ class ListAllBlogs : AppCompatActivity() {
         thats_embarassing = findViewById<View>(R.id.thats_embarassing) as TextView
         search_blogs_et = findViewById<View>(R.id.search_blogs_et) as EditText
         refreshView = findViewById<View>(R.id.swipeRefreshBlogs) as SwipeRefreshLayout
-        favoritesIcon =  findViewById<ImageButton>(R.id.favoritesIcon) as ImageButton
-        logoutButton =  findViewById<ImageButton>(R.id.logoutButton) as ImageButton
+        favoritesIcon = findViewById<ImageButton>(R.id.favoritesIcon) as ImageButton
+        logoutButton = findViewById<ImageButton>(R.id.logoutButton) as ImageButton
+        createBlogButton =
+            findViewById<FloatingActionButton>(R.id.createBlogButton) as FloatingActionButton
+        createBlogButton.setOnClickListener {
+            startActivity(Intent(this@ListAllBlogs, WriteBlog::class.java))
+        }
+        if (PrefUtils.getString(this@ListAllBlogs, PrefKeys.USER_ACC_TYPE, null).equals("admin")) {
+            createBlogButton.visibility = View.VISIBLE
+            favoritesIcon.visibility = View.GONE
+
+        } else {
+            createBlogButton.visibility = View.GONE
+            favoritesIcon.visibility = View.VISIBLE
+        }
         favoritesIcon.setOnClickListener {
             startActivity(Intent(this@ListAllBlogs, ShowFavoritesActivity::class.java))
         }
@@ -99,8 +114,8 @@ class ListAllBlogs : AppCompatActivity() {
                 title(R.string.Logout)
                 message(R.string.are_your_sure_logout)
                 positiveButton(R.string.logout) { dialog ->
-                   val a =  FirebaseAuth.getInstance()
-                a.signOut()
+                    val a = FirebaseAuth.getInstance()
+                    a.signOut()
                     PrefUtils.setString(this@ListAllBlogs, PrefKeys.USER_ACC_TYPE, null)
                     startActivity(Intent(this@ListAllBlogs, LoginActivity::class.java))
                     finish()
@@ -187,7 +202,8 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
                                         tempMap.get("author_name") as String,
                                         tempMap.get("reported_on") as Long,
                                         tempMap.get("availability") as Boolean,
-                                        0
+                                        0,
+                                        tempMap.get("document_key") as String
                                     )
 
                                     if (tempMap.get("availability") as Boolean) {
@@ -209,7 +225,8 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
                                                     tempMap.get("author_name") as String,
                                                     tempMap.get("reported_on") as Long,
                                                     tempMap.get("availability") as Boolean,
-                                                    0
+                                                    0,
+                                                    tempMap.get("document_key") as String
                                                 )
 
                                                 if (tempMap.get("availability") as Boolean) {
@@ -314,13 +331,16 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
 
     private fun populateListArray(filter: String) {
 
+
         globalViewModel!!.getBlogLiveList(filter).observeForever { Blogs ->
+            blogAdapter.update(mutableListOf<BlogItem>())
             if (Blogs.isNotEmpty()) {
                 thats_embarassing.visibility = View.GONE
                 avi.hide()
                 avi.visibility = View.GONE
                 verticalViewPager.visibility = View.VISIBLE
                 Log.d("Blogsss", "${Blogs[0].availability}")
+
                 blogAdapter.update(Blogs)
                 //verticlePagerAdapter!!.update(Blogs)
 

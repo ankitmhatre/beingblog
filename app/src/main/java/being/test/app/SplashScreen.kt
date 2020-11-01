@@ -22,13 +22,10 @@ class SplashScreen : AppCompatActivity() {
 
 
 
-            if(PrefUtils.getString(this, PrefKeys.USER_ACC_TYPE, null).equals("admin")){
-                Handler().postDelayed({ startActivityForResult(Intent(this@SplashScreen, DashboardHome::class.java), loginCode) }, 1500)
 
-            }else{
                 Handler().postDelayed({ startActivityForResult(Intent(this@SplashScreen, ListAllBlogs::class.java), loginCode) }, 1500)
 
-            }
+
         } else {
             /**
              * User is not signed in
