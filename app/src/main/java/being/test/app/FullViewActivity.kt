@@ -123,8 +123,10 @@ class FullViewActivity : AppCompatActivity(), FirebaseFunctionsResponse {
                         getString(R.string.blog_deleted),
                         Snackbar.LENGTH_SHORT
                     ).show()
+                    finish()
 
-                    GlobalRepository(application).deleteSpecificBlog(bookmarkBlogItem.document_key)
+
+                   // GlobalRepository(application).deleteSpecificBlog(bookmarkBlogItem.document_key)
 
                 }
                 .addOnFailureListener { e ->
