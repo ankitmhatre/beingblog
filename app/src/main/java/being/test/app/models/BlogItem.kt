@@ -9,7 +9,7 @@ import java.io.Serializable
 @Entity
 data class BlogItem(
 
-        @SerializedName("image")
+        @SerializedName("media_url")
         var image_url: String,
 
         @SerializedName("content")

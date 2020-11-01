@@ -7,7 +7,9 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.loader.content.CursorLoader
 import being.test.app.R
+import being.test.app.models.BlogItem
 import coil.api.load
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import org.json.JSONArray
@@ -40,31 +42,150 @@ class FirebaseFunctions {
     }
 
 
-
-
-
-    fun updateDataToFirestoreDatabase(firebaseFunctionsResponse: FirebaseFunctionsResponse, collection_name: String, jsonObject: Map<String, Serializable>) {
+    fun checkFavorite(firebaseFunctionsResponse: FirebaseFunctionsResponse, blogItem: BlogItem) {
         Log.d(TAG, "inside update CollectionDataFron Firbase")
         val firebaseStoreRoot = FirebaseFirestore.getInstance()
+        val user = FirebaseAuth.getInstance().currentUser
 
-        val documentReference = firebaseStoreRoot.collection(collection_name).document(jsonObject.get("document_key") as String)
+        val documentReference = firebaseStoreRoot
+            .collection("users/${user!!.uid}/favorites")
 
+
+        documentReference.get()
+            .addOnSuccessListener { documents ->
+
+                var isFavor = false
+
+                for (document in documents) {
+                    try {
+                        Log.d(
+                            "ahadadad",
+                            "${document.id} => ${document.data.get(blogItem.document_key)}}"
+                        )
+                    } catch (e: java.lang.Exception) {
+
+                    }
+
+                    if (document.data.get(blogItem.document_key) != null && (document.data.get(
+                            blogItem.document_key
+                        ) as Boolean)
+                    ) {
+
+                        isFavor = true
+                    }
+
+                }
+                firebaseFunctionsResponse.checkFavorite(isFavor)
+
+            }
+            .addOnFailureListener {
+                firebaseFunctionsResponse.checkFavorite(false)
+            }
+
+
+    }
+
+    fun toggleFavorites(
+        firebaseFunctionsResponse: FirebaseFunctionsResponse,
+        key: String,
+        isFavor: Boolean
+    ) {
+
+        val firebaseStoreRoot = FirebaseFirestore.getInstance()
+        val user = FirebaseAuth.getInstance().currentUser
+
+        val documentReference = firebaseStoreRoot
+            .collection("users/${user!!.uid}/favorites")
+
+
+        val data5 = hashMapOf(
+            key to isFavor
+        )
 
         documentReference
-            .update(jsonObject)
-            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!")
-                firebaseFunctionsResponse.dataUpdateSuccess(true)}
-            .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e)
-                firebaseFunctionsResponse.dataUpdateSuccess(false)}
+            .add(data5)
+            .addOnSuccessListener {
+                Log.d(TAG, "DocumentSnapshot successfully updated!")
+                firebaseFunctionsResponse.toggleFavorite(true)
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error updating document", e)
+                firebaseFunctionsResponse.toggleFavorite(false)
+            }
 
     }
 
 
+    fun updateDataToFirestoreDatabase(
+        firebaseFunctionsResponse: FirebaseFunctionsResponse,
+        collection_name: String,
+        jsonObject: Map<String, Serializable>
+    ) {
+        Log.d(TAG, "inside update CollectionDataFron Firbase")
+        val firebaseStoreRoot = FirebaseFirestore.getInstance()
 
-    fun getDataFromFirestoreDatabase(firebaseFunctionsResponse: FirebaseFunctionsResponse,
+        val documentReference = firebaseStoreRoot.collection(collection_name)
+            .document(jsonObject.get("document_key") as String)
+
+
+        documentReference
+            .update(jsonObject)
+            .addOnSuccessListener {
+                Log.d(TAG, "DocumentSnapshot successfully updated!")
+                firebaseFunctionsResponse.dataUpdateSuccess(true)
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error updating document", e)
+                firebaseFunctionsResponse.dataUpdateSuccess(false)
+            }
+
+    }
+
+
+    fun getDataFromFirestoreDatabase(
+        firebaseFunctionsResponse: FirebaseFunctionsResponse,
+        collection_name: String
+    ) {
+
+        val firebaseStoreRoot = FirebaseFirestore.getInstance()
+        firebaseStoreRoot.collection(collection_name)
+        .addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            val globalJSON = JSONObject()
+            val jsonArray = JSONArray()
+
+
+            snapshot!!.documents.forEach{
+                Log.d("adasdad", "Current data:  ${it.data}")
+
+
+                val j = JSONObject()
+                it.data!!.forEach {
+                j.put(it.key, it.value)
+                }
+                jsonArray.put(j)
+
+
+            }
+            try {
+
+                globalJSON.put("result", jsonArray)
+            } catch (ex: JSONException) {
+                ex.printStackTrace()
+            }
+
+            firebaseFunctionsResponse.firebaseFunctionsResponse(globalJSON, type = "")
+        }
+
+}
+
+    fun searchDataFromFirestoreDatabase(firebaseFunctionsResponse: FirebaseFunctionsResponse,
                                      collection_name: String,
                                      topic: String) {
-
 
         val firebaseStoreRoot = FirebaseFirestore.getInstance()
         firebaseStoreRoot.collection(collection_name)

@@ -33,8 +33,6 @@ import java.io.Serializable
 
 class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
     val PICK_IMAGE = 827
-    val PICK_VIDEO = 828
-    val PICK_AUDIO = 829
     private var TAG = WriteBlog::class.java.simpleName
     lateinit var reporters_article_upload_imageview: AppCompatImageView
     lateinit var camera_button: ColorCircle
@@ -398,6 +396,14 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
 
         reporters_article_pb.visibility = View.GONE
         reporters_article_send_btn.visibility = View.VISIBLE
+
+    }
+
+    override fun checkFavorite(isFavorite: Boolean) {
+
+    }
+
+    override fun toggleFavorite(isFavorite: Boolean) {
 
     }
 }

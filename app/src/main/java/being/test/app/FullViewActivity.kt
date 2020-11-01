@@ -14,6 +14,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
+import being.test.app.firestoreutils.FirebaseFunctions
+import being.test.app.firestoreutils.FirebaseFunctionsResponse
 import being.test.app.models.BlogItem
 import being.test.app.repository.GlobalRepository
 import being.test.app.viewmodel.GlobalViewModel
@@ -21,9 +23,11 @@ import coil.api.load
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.wang.avi.AVLoadingIndicatorView
+import org.json.JSONObject
 
-class FullViewActivity : AppCompatActivity() {
+class FullViewActivity : AppCompatActivity(), FirebaseFunctionsResponse {
     private val TAG = "FullViewActivity"
     lateinit var textView7: TextView
     lateinit var apiInterface: ApiInterface
@@ -48,6 +52,7 @@ class FullViewActivity : AppCompatActivity() {
     lateinit var progressbar: AVLoadingIndicatorView
     lateinit var rootView: RelativeLayout
     lateinit var bookmarkBlogItem: BlogItem
+     var isFavorite: Boolean =  false
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -133,40 +138,55 @@ class FullViewActivity : AppCompatActivity() {
                 }
         }
 
+
+        /**
+         * For checking if this is favorite
+         */
+
+
         favoriteBLog.setOnClickListener {
-            Log.d(TAG, "BlogItem Pinned : ${bookmarkBlogItem.isPinned}")
-            if (bookmarkBlogItem != null)
-                if (bookmarkBlogItem.isPinned == 1) {
-                    GlobalRepository(application).updatePinned(bookmarkBlogItem.document_key, 0)
-                    Snackbar.make(
-                        findViewById(android.R.id.content),
-                        getString(R.string.removed_from_bookmarks),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
 
-                    favoriteBLog.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            this,
-                            R.drawable.ic_star_border
-                        )
-                    );
+            FirebaseFunctions().toggleFavorites(
+                this@FullViewActivity,
+                bookmarkBlogItem.document_key,
+                 !isFavorite
+            )
 
 
-                } else {
-                    GlobalRepository(application).updatePinned(bookmarkBlogItem.document_key, 1)
-                    Snackbar.make(
-                        findViewById(android.R.id.content),
-                        getString(R.string.saved_to_bookmarks),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-
-                    favoriteBLog.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            this,
-                            R.drawable.ic_star
-                        )
-                    );
-                }
+//            Log.d(TAG, "BlogItem Pinned : ${bookmarkBlogItem.isPinned}")
+//            if (bookmarkBlogItem != null)
+//                if (bookmarkBlogItem.isPinned == 1) {
+//                    GlobalRepository(application).updatePinned(bookmarkBlogItem.document_key, 0)
+//                    Snackbar.make(
+//                        findViewById(android.R.id.content),
+//                        getString(R.string.removed_from_bookmarks),
+//                        Snackbar.LENGTH_SHORT
+//                    ).show()
+//
+//                    favoriteBLog.setImageDrawable(
+//                        ContextCompat.getDrawable(
+//                            this,
+//                            R.drawable.ic_star_border
+//                        )
+//                    );
+//
+//
+//                } else {
+//                    GlobalRepository(application).updatePinned(bookmarkBlogItem.document_key, 1)
+//
+//                    Snackbar.make(
+//                        findViewById(android.R.id.content),
+//                        getString(R.string.saved_to_bookmarks),
+//                        Snackbar.LENGTH_SHORT
+//                    ).show()
+//
+//                    favoriteBLog.setImageDrawable(
+//                        ContextCompat.getDrawable(
+//                            this,
+//                            R.drawable.ic_star
+//                        )
+//                    );
+//                }
 
 
         }
@@ -174,6 +194,7 @@ class FullViewActivity : AppCompatActivity() {
         freshData(intent)
 
     }
+
 
     fun freshData(i: Intent) {
         progressbar.show()
@@ -183,26 +204,20 @@ class FullViewActivity : AppCompatActivity() {
 
         try {
 
-globalViewModel.getBlogItem(i.extras?.get("document_key") as String).observeForever {
-
-    if (it != null) {
-        bookmarkBlogItem = it
-        favoriteBLog.setImageDrawable(
-            ContextCompat.getDrawable(
-                this,
-                when (it.isPinned) {
-                    0 -> R.drawable.ic_star_border
-                    1 -> R.drawable.ic_star
-                    else -> R.drawable.ic_star_border
-                }
-            )
-        );
-        thisisthearticle(it)
-    }else{
-        finish()
-    }
-}
-
+            bookmarkBlogItem = i.extras?.get("blogItem") as BlogItem
+            favoriteBLog.setImageDrawable(
+                ContextCompat.getDrawable(
+                    this,
+//                    when (bookmarkBlogItem.isPinned) {
+//                        0 -> R.drawable.ic_star_border
+//                        1 -> R.drawable.ic_star
+//                        else -> R.drawable.ic_star_border
+//                    }
+//
+                    R.drawable.ic_star
+                )
+            );
+            thisisthearticle(bookmarkBlogItem)
 
 
         } catch (e: Exception) {
@@ -214,6 +229,10 @@ globalViewModel.getBlogItem(i.extras?.get("document_key") as String).observeFore
 
 
     private fun thisisthearticle(blogItem: BlogItem) {
+        FirebaseFunctions().checkFavorite(
+            this@FullViewActivity,
+            bookmarkBlogItem
+        )
         Log.d(TAG, "BlogItem: thisIsTheArticle ${blogItem.content}")
 
         hideProgress()
@@ -241,6 +260,19 @@ globalViewModel.getBlogItem(i.extras?.get("document_key") as String).observeFore
 
 
 
+
+
+
+        var storage = FirebaseStorage.getInstance()
+        var listRef = storage.getReference(img_url)
+
+        listRef.downloadUrl.addOnSuccessListener { it ->
+          val   fullUrl = "${it.scheme}://${it.host}${it.encodedPath}?alt=media"
+            full_image_news.load(fullUrl) {
+                placeholder(R.drawable.blogs_default)
+                crossfade(true)
+            }
+        }
 
 
 
@@ -277,4 +309,46 @@ globalViewModel.getBlogItem(i.extras?.get("document_key") as String).observeFore
         progressbar.visibility = View.GONE
     }
 
+    override fun firebaseFunctionsResponse(jsonArray: JSONObject?, type: String?) {
+
+    }
+
+    override fun dataAddSuccess(successful: Boolean) {
+
+    }
+
+    override fun dataUpdateSuccess(successful: Boolean) {
+
+    }
+
+    override fun checkFavorite(isFavorite: Boolean) {
+        Log.d("checkFaviioooo", "$isFavorite")
+        this.isFavorite = isFavorite
+        favoriteBLog.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                when (isFavorite) {
+                    false -> R.drawable.ic_star_border
+                    true -> R.drawable.ic_star
+                }
+            )
+        )
+
+
+    }
+
+    override fun toggleFavorite(isFavorite: Boolean) {
+      if(isFavorite){
+        favoriteBLog.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                when (isFavorite) {
+                    false -> R.drawable.ic_star_border
+                    true -> R.drawable.ic_star
+                }
+            )
+        )}else{
+          this.isFavorite = !this.isFavorite
+      }
+    }
 }

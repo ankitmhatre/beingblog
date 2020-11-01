@@ -21,14 +21,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import being.test.app.firestoreutils.FirebaseFunctions
 import being.test.app.firestoreutils.FirebaseFunctionsResponse
 import being.test.app.models.BlogItem
-import being.test.app.repository.GlobalRepository
 import being.test.app.viewmodel.GlobalViewModel
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.wang.avi.AVLoadingIndicatorView
@@ -86,16 +82,14 @@ class ListAllBlogs : AppCompatActivity(), FirebaseFunctionsResponse {
         Log.d("BlogsItemResponse", "$blogAdapter  ")
         settingUpIds()
         initSwipePager()
-    }
 
-    override fun onResume() {
-        super.onResume()
         FirebaseFunctions().getDataFromFirestoreDatabase(
             this@ListAllBlogs,
-            "data/v1/blogs",
-            ""
-        )
+            "data/v1/blogs"
+            )
     }
+
+
 
     private fun settingUpIds() {
         thats_embarassing = findViewById<View>(R.id.thats_embarassing) as TextView
@@ -152,7 +146,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
         avi.show()
         avi.visibility = View.VISIBLE
 
-        FirebaseFunctions().getDataFromFirestoreDatabase(
+        FirebaseFunctions().searchDataFromFirestoreDatabase(
             this@ListAllBlogs,
             "data/v1/blogs",
             p0.toString()
@@ -184,8 +178,7 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
 
             FirebaseFunctions().getDataFromFirestoreDatabase(
                 this@ListAllBlogs,
-                "data/v1/blogs",
-                ""
+                "data/v1/blogs"
             )
         }
         thats_embarassing.visibility = View.GONE
@@ -252,14 +245,22 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
             thats_embarassing.visibility = View.VISIBLE
         }
 
+        refreshView.isRefreshing = false
+    }
 
-}
+    override fun dataAddSuccess(successful: Boolean) {
 
-override fun dataAddSuccess(successful: Boolean) {
-    TODO("Not yet implemented")
-}
+    }
 
-override fun dataUpdateSuccess(successful: Boolean) {
-    TODO("Not yet implemented")
-}
+    override fun dataUpdateSuccess(successful: Boolean) {
+
+    }
+
+    override fun checkFavorite(isFavorite: Boolean) {
+
+    }
+
+    override fun toggleFavorite(isFavorite: Boolean) {
+
+    }
 }

@@ -144,7 +144,7 @@ role = "admin"
                             .set(firestoreUserData)
                             .addOnSuccessListener { documentReference ->
 
-//TODO("Handle all scenarios here")
+
                                 PrefUtils.setString(this@LoginActivity, PrefKeys.USER_ACC_TYPE,  role)
 
 
