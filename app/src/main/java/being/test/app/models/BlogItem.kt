@@ -3,13 +3,12 @@ package being.test.app.models
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
 import java.io.Serializable
 
 @Entity
 data class BlogItem(
-        @SerializedName("blog_id")
-        @PrimaryKey
-        var blog_id: Long,
+
         @SerializedName("image")
         var image_url: String,
 
@@ -28,7 +27,9 @@ data class BlogItem(
         var availability: Boolean,
 
         val isPinned: Int = 0,
+
         @SerializedName("document_key")
+        @PrimaryKey
         var document_key: String
 
 

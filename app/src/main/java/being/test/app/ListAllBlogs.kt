@@ -13,12 +13,13 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import being.test.app.firestoreutils.FirebaseFunctions
+import being.test.app.firestoreutils.FirebaseFunctionsResponse
 import being.test.app.models.BlogItem
 import being.test.app.repository.GlobalRepository
 import being.test.app.viewmodel.GlobalViewModel
@@ -28,9 +29,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.wang.avi.AVLoadingIndicatorView
+import org.json.JSONObject
+import java.lang.reflect.Type
 
-class ListAllBlogs : AppCompatActivity() {
+class ListAllBlogs : AppCompatActivity(), FirebaseFunctionsResponse {
 
     internal var query = ""
 
@@ -66,11 +71,7 @@ class ListAllBlogs : AppCompatActivity() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        populateListArray("")
-        refreshListCall()
-    }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,6 +88,14 @@ class ListAllBlogs : AppCompatActivity() {
         initSwipePager()
     }
 
+    override fun onResume() {
+        super.onResume()
+        FirebaseFunctions().getDataFromFirestoreDatabase(
+            this@ListAllBlogs,
+            "data/v1/blogs",
+            ""
+        )
+    }
 
     private fun settingUpIds() {
         thats_embarassing = findViewById<View>(R.id.thats_embarassing) as TextView
@@ -137,7 +146,18 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
     }
 
     override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-        populateListArray(p0.toString())
+//        populateListArray(p0.toString())
+        thats_embarassing.visibility = View.GONE
+        avi = findViewById<View>(R.id.avi) as AVLoadingIndicatorView
+        avi.show()
+        avi.visibility = View.VISIBLE
+
+        FirebaseFunctions().getDataFromFirestoreDatabase(
+            this@ListAllBlogs,
+            "data/v1/blogs",
+            p0.toString()
+        )
+
     }
 })
         search_blogs_et.setOnTouchListener(object : View.OnTouchListener{
@@ -157,7 +177,16 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
             }
         })
         refreshView.setOnRefreshListener {
-            refreshListCall()
+            thats_embarassing.visibility = View.GONE
+            avi = findViewById<View>(R.id.avi) as AVLoadingIndicatorView
+            avi.show()
+            avi.visibility = View.VISIBLE
+
+            FirebaseFunctions().getDataFromFirestoreDatabase(
+                this@ListAllBlogs,
+                "data/v1/blogs",
+                ""
+            )
         }
         thats_embarassing.visibility = View.GONE
         avi = findViewById<View>(R.id.avi) as AVLoadingIndicatorView
@@ -169,170 +198,68 @@ search_blogs_et.addTextChangedListener(object : TextWatcher{
 
     }
 
-    private fun refreshListCall() {
-        if (Utilities.isNetworkAvailable(this)) {
-            refreshView.isRefreshing = true
-            val firestoreImplBase = FirebaseFirestore.getInstance()
-            firestoreImplBase.collection("data/v1/blogs")
-                .get()
-                .addOnSuccessListener { result ->
-                    if (result.size() > 0) {
-
-                        for (obj in result) {
-
-                            //Log.d(TAG, "timestamp check ${obj.data.get("reported_on")} ${Utilities.getTimestampFrom(10)}")
-                            val tempMap: Map<String, Any> = obj.data
-                            if ((tempMap.get("reported_on") as Long) > Utilities.getTimestampFrom(100)
-                            ) {
-
-                                Log.d(TAG, " Verified")
-
-                                var fullUrl: String? = null
-                                val storage = FirebaseStorage.getInstance()
-                                val listRef =
-                                    storage.getReference(tempMap.get("media_url") as String)
-                                listRef.downloadUrl.addOnSuccessListener {
-                                    fullUrl = "${it.scheme}://${it.host}${it.encodedPath}?alt=media"
 
 
-
-
-                                    if (tempMap.get("availability") as Boolean) {
-                                        try {
-                                            var fullUrl: String? = null
-                                            val storage = FirebaseStorage.getInstance()
-                                            val listRef =
-                                                storage.getReference(tempMap.get("media_url") as String)
-                                            listRef.downloadUrl.addOnSuccessListener {
-                                                fullUrl =
-                                                    "${it.scheme}://${it.host}${it.encodedPath}?alt=media"
-
-
-                                                val blogItemssssss = BlogItem(
-                                                    tempMap.get("blog_id") as Long,
-                                                    fullUrl as String,
-                                                    tempMap.get("content") as String,
-                                                    tempMap.get("title") as String,
-                                                    tempMap.get("author_name") as String,
-                                                    tempMap.get("reported_on") as Long,
-                                                    tempMap.get("availability") as Boolean,
-                                                    0,
-                                                    tempMap.get("document_key") as String
-                                                )
-
-
-                                                GlobalRepository(application).insertBlog(
-                                                    blogItemssssss
-                                                )
-                                                Log.d(TAG, " 44444 $blogItemssssss." )
-
-
-
-
-                                            }.addOnFailureListener {
-
-                                            }
-
-
-                                        } catch (e: Exception) {
-                                            e.printStackTrace()
-                                        }
-
-                                    } else {
-
-                                        try {
-                                            GlobalRepository(application).deleteSpecificBlog(
-                                                tempMap.get("document_key") as String
-                                            )
-                                        } catch (e: Exception) {
-                                            Log.d("Blogss", e.toString())
-                                        }
-
-                                    }
-
-
-                                }.addOnFailureListener {
-                                    Log.d("ERROR", "${it.message}")
-                                }
-                                //GlobalRepository(application).insertContact(c)
-                            } else {
-                                Log.d(TAG, "Not Verified")
-                            }
-                        }
-                    }
-                    refreshView.isRefreshing = false
-                    try {
-                        val snackbar = Snackbar.make(
-                            findViewById<View>(android.R.id.content),
-                            R.string.successfully_updated,
-                            Snackbar.LENGTH_SHORT
-                        )
-                        snackbar.setBackgroundTint(resources.getColor(R.color.colorPrimaryDark))
-                        snackbar.show()
-                    } catch (e: java.lang.Exception) {
-                        e.printStackTrace()
-                    }
-
-                }
-                .addOnFailureListener { error ->
-                    Log.d(TAG, "${error.message}")
-                    refreshView.isRefreshing = false
-                    try {
-                        val snackbar = Snackbar.make(
-                            findViewById<View>(android.R.id.content),
-                            R.string.some_error,
-                            Snackbar.LENGTH_SHORT
-                        )
-                        snackbar.setBackgroundTint(resources.getColor(android.R.color.holo_red_light))
-                        snackbar.show()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-        } else {
-            refreshView.isRefreshing = false
-            try {
-                val snackbar = Snackbar.make(
-                    findViewById<View>(android.R.id.content),
-                    R.string.no_internet_conn,
-                    Snackbar.LENGTH_LONG
-                )
-                snackbar.setBackgroundTint(resources.getColor(android.R.color.holo_red_light))
-                snackbar.show()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private fun populateListArray(filter: String) {
-
-
-        globalViewModel!!.getBlogLiveList(filter).observeForever { Blogs ->
-            blogAdapter.update(mutableListOf<BlogItem>())
-            if (Blogs.isNotEmpty()) {
-                thats_embarassing.visibility = View.GONE
-                avi.hide()
-                avi.visibility = View.GONE
-                verticalViewPager.visibility = View.VISIBLE
-                Log.d("Blogsss", "${Blogs[0].availability}")
-
-                blogAdapter.update(Blogs)
-                //verticlePagerAdapter!!.update(Blogs)
-
-            } else {
-                avi.hide()
-                avi.visibility = View.GONE
-                thats_embarassing.visibility = View.VISIBLE
-            }
-        }
-
-
-    }
 
 
     companion object {
         private val HIDE_THRESHOLD = 20
     }
 
+    override fun firebaseFunctionsResponse(jsonObject: JSONObject?, type: String?) {
+        if (jsonObject != null) {
+
+            try {
+                val gson = GsonBuilder().create()
+                var Blogs = mutableListOf<BlogItem>()
+                val groupListType: Type = object : TypeToken<ArrayList<BlogItem?>?>() {}.getType()
+                val model = gson.fromJson(
+                    jsonObject.getJSONArray("result").toString(),
+                    groupListType
+                ) as ArrayList<BlogItem>;
+                Blogs.addAll(model)
+
+                blogAdapter.update(mutableListOf<BlogItem>())
+
+
+                if (Blogs.isNotEmpty()) {
+                    thats_embarassing.visibility = View.GONE
+                    avi.hide()
+                    avi.visibility = View.GONE
+                    verticalViewPager.visibility = View.VISIBLE
+                    Log.d("blogs from fbstore", "${Blogs}")
+
+                    blogAdapter.update(Blogs)
+                    //verticlePagerAdapter!!.update(Blogs)
+                }else{
+                    blogAdapter.update(mutableListOf<BlogItem>())
+                    thats_embarassing.visibility = View.VISIBLE
+                    verticalViewPager.visibility = View.VISIBLE
+                    avi.visibility = View.GONE
+                    avi.hide()
+                }
+            } catch (e: Exception) {
+                blogAdapter.update(mutableListOf<BlogItem>())
+                e.printStackTrace()
+                avi.hide()
+                verticalViewPager.visibility = View.GONE
+                avi.visibility = View.GONE
+                thats_embarassing.visibility = View.VISIBLE
+            }
+        } else {
+            avi.hide()
+            avi.visibility = View.GONE
+            thats_embarassing.visibility = View.VISIBLE
+        }
+
+
+}
+
+override fun dataAddSuccess(successful: Boolean) {
+    TODO("Not yet implemented")
+}
+
+override fun dataUpdateSuccess(successful: Boolean) {
+    TODO("Not yet implemented")
+}
 }

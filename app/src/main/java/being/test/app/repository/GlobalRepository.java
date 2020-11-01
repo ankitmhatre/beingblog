@@ -42,7 +42,7 @@ public class GlobalRepository {
         return BlogDao.getAllBlog(filter);
     }
 
-    public LiveData<BlogItem> getBlogItem(long id) {
+    public LiveData<BlogItem> getBlogItem(String id) {
         return BlogDao.getBlogItem(id);
     }
 
@@ -50,16 +50,16 @@ public class GlobalRepository {
         return BlogDao.getAllPinnedBlog(filter);
     }
 
-    public void updatePinned(Long id, int isPin) {
-        new UpdateBlogTask(BlogDao, id, isPin).execute();
+    public void updatePinned(String documentKey, int isPin) {
+        new UpdateBlogTask(BlogDao, documentKey, isPin).execute();
     }
 
     public LiveData<List<BlogItem>> getOldBlogItem(Long oldstamp) {
         return BlogDao.getOldBlogThan(oldstamp);
     }
 
-    public LiveData<Integer> getPinStatus(Long BlogId) {
-        return BlogDao.getPinnedStatus(BlogId);
+    public LiveData<Integer> getPinStatus(String docuId) {
+        return BlogDao.getPinnedStatus(docuId);
     }
 
     public void deleteSpecificBlog(String documentkey) {
@@ -68,12 +68,12 @@ public class GlobalRepository {
 
     private static class UpdateBlogTask extends AsyncTask<Void, Void, Void> {
         private BlogsDao BlogDao;
-        private Long id;
+        private String docuemnt_key;
         private int value;
 
-        public UpdateBlogTask(BlogsDao BlogDao, Long id, int val) {
+        public UpdateBlogTask(BlogsDao BlogDao, String docuemnt_key, int val) {
             this.BlogDao = BlogDao;
-            this.id = id;
+            this.docuemnt_key = docuemnt_key;
             this.value = val;
 
         }
@@ -85,7 +85,7 @@ public class GlobalRepository {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            BlogDao.updatePinned(id, value);
+            BlogDao.updatePinned(docuemnt_key, value);
             return null;
         }
     }

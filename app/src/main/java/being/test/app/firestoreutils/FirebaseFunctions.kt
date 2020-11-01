@@ -39,6 +39,10 @@ class FirebaseFunctions {
             }
     }
 
+
+
+
+
     fun updateDataToFirestoreDatabase(firebaseFunctionsResponse: FirebaseFunctionsResponse, collection_name: String, jsonObject: Map<String, Serializable>) {
         Log.d(TAG, "inside update CollectionDataFron Firbase")
         val firebaseStoreRoot = FirebaseFirestore.getInstance()
@@ -55,19 +59,22 @@ class FirebaseFunctions {
 
     }
 
+
+
     fun getDataFromFirestoreDatabase(firebaseFunctionsResponse: FirebaseFunctionsResponse,
                                      collection_name: String,
                                      topic: String) {
-        Log.d(TAG, "inside Get CollectionDataFron Firbase")
+
+
         val firebaseStoreRoot = FirebaseFirestore.getInstance()
-        firebaseStoreRoot.collection(collection_name).get()
+        firebaseStoreRoot.collection(collection_name)
+            .whereGreaterThanOrEqualTo("content", topic)
+
+            .get()
                 .addOnCompleteListener { task ->
                     if (task.result != null && task.isSuccessful) {
                         val globalJSON = JSONObject()
                         val jsonArray = JSONArray()
-                        globalJSON.put("error_code", 0)
-                        globalJSON.put("message", "success")
-
 
 
                         for (document in task.result!!) {
@@ -79,39 +86,19 @@ class FirebaseFunctions {
                             jsonArray.put(j)
                             try {
 
-                                globalJSON.put(topic, jsonArray)
+                                globalJSON.put("result", jsonArray)
                             } catch (ex: JSONException) {
                                 ex.printStackTrace()
                             }
 
                         }
                         firebaseFunctionsResponse.firebaseFunctionsResponse(globalJSON, topic)
-                    } else {
-                        val globalJSON = JSONObject()
-                        val jsonArray = JSONArray()
-                        globalJSON.put("error_code", -1)
-                        globalJSON.put("message", task.exception!!.message)
-                        try {
-
-                            globalJSON.put(topic, jsonArray)
-                        } catch (ex: JSONException) {
-                            ex.printStackTrace()
-                        }
-                        firebaseFunctionsResponse.firebaseFunctionsResponse(globalJSON, topic)
+                    } else{
+                        firebaseFunctionsResponse.firebaseFunctionsResponse(null, topic)
                     }
                 }
                 .addOnFailureListener { e ->
-                    val jsonArray = JSONArray()
-                    val globalJSON = JSONObject()
-                    globalJSON.put("error_code", -1)
-                    globalJSON.put("message", e.message)
-                    try {
-
-                        globalJSON.put(topic, jsonArray)
-                    } catch (ex: JSONException) {
-                        ex.printStackTrace()
-                    }
-                    firebaseFunctionsResponse.firebaseFunctionsResponse(globalJSON, topic)
+                    firebaseFunctionsResponse.firebaseFunctionsResponse(null, topic)
                 }
     }
 

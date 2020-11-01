@@ -23,7 +23,7 @@ class SplashScreen : AppCompatActivity() {
 
 
 
-                Handler().postDelayed({ startActivityForResult(Intent(this@SplashScreen, ListAllBlogs::class.java), loginCode) }, 1500)
+                Handler().postDelayed({ startActivityForResult(Intent(this@SplashScreen, ListAllBlogs::class.java), loginCode) }, 0)
 
 
         } else {
@@ -32,7 +32,7 @@ class SplashScreen : AppCompatActivity() {
              */
 
             Handler().postDelayed({ startActivityForResult(Intent(this@SplashScreen, LoginActivity::class.java),
-                loginCode) }, 2000)
+                loginCode) }, 0)
 
 
         }

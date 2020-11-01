@@ -137,7 +137,7 @@ class FullViewActivity : AppCompatActivity() {
             Log.d(TAG, "BlogItem Pinned : ${bookmarkBlogItem.isPinned}")
             if (bookmarkBlogItem != null)
                 if (bookmarkBlogItem.isPinned == 1) {
-                    GlobalRepository(application).updatePinned(bookmarkBlogItem.blog_id, 0)
+                    GlobalRepository(application).updatePinned(bookmarkBlogItem.document_key, 0)
                     Snackbar.make(
                         findViewById(android.R.id.content),
                         getString(R.string.removed_from_bookmarks),
@@ -153,7 +153,7 @@ class FullViewActivity : AppCompatActivity() {
 
 
                 } else {
-                    GlobalRepository(application).updatePinned(bookmarkBlogItem.blog_id, 1)
+                    GlobalRepository(application).updatePinned(bookmarkBlogItem.document_key, 1)
                     Snackbar.make(
                         findViewById(android.R.id.content),
                         getString(R.string.saved_to_bookmarks),
@@ -183,7 +183,7 @@ class FullViewActivity : AppCompatActivity() {
 
         try {
 
-globalViewModel.getBlogItem(i.extras?.get("blog_id") as Long).observeForever {
+globalViewModel.getBlogItem(i.extras?.get("document_key") as String).observeForever {
 
     if (it != null) {
         bookmarkBlogItem = it

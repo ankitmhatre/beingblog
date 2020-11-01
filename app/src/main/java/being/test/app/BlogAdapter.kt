@@ -3,7 +3,6 @@ package being.test.app
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,15 +11,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
-import coil.request.CachePolicy
-import coil.transform.RoundedCornersTransformation
 import being.test.app.models.BlogItem
+import coil.api.load
+import com.google.firebase.storage.FirebaseStorage
 
 
 class BlogAdapter(val activity: Activity) : RecyclerView.Adapter<BlogAdapter.MyViewHolder>() {
 
     var BlogItems: List<BlogItem> = listOf()
+    var storage = FirebaseStorage.getInstance()
 
 
     internal var previousExpandedPosition = -1
@@ -88,7 +87,6 @@ class BlogAdapter(val activity: Activity) : RecyclerView.Adapter<BlogAdapter.MyV
             bundle.putExtra("reported_on", BlogItems[position].timestamp)
             bundle.putExtra("author_name", BlogItems[position].author_name)
             bundle.putExtra("img_url", BlogItems[position].image_url)
-            bundle.putExtra("blog_id", BlogItems[position].blog_id)
             bundle.putExtra("isPinned", BlogItems[position].isPinned)
             bundle.putExtra("blogItem", BlogItems[position])
             activity.startActivity(bundle)
@@ -96,17 +94,20 @@ class BlogAdapter(val activity: Activity) : RecyclerView.Adapter<BlogAdapter.MyV
         }
 
 
-
-        val url = "${(BlogItems[position].image_url)}"
-
+        var fullUrl: String? = null
 
 
+        if (BlogItems[position].image_url != null) {
+            val listRef = storage.getReference(BlogItems[position].image_url)
+            listRef.downloadUrl.addOnSuccessListener {
+                fullUrl = "${it.scheme}://${it.host}${it.encodedPath}?alt=media"
+                holder.iv.load(fullUrl) {
+                    placeholder(R.drawable.blogs_default)
+                    crossfade(true)
+                }
+            }
 
-        holder.iv.load(url) {
-            placeholder(R.drawable.blogs_default)
-            crossfade(true)
         }
-
 
 
     }

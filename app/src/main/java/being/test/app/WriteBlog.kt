@@ -52,7 +52,6 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
     lateinit var user: FirebaseUser
     val db = FirebaseFirestore.getInstance()
     val fbAuth = FirebaseAuth.getInstance()
-    var blogId: Long = -1
 
 
     override fun onNewIntent(intent: Intent?) {
@@ -112,7 +111,6 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
             alreadyBlogItem = i.extras?.get("blogItem") as BlogItem
 
             if (alreadyBlogItem != null){
-                blogId = alreadyBlogItem!!.blog_id
                 thisisthearticle(alreadyBlogItem!!)
             }
         } catch (e: Exception) {
@@ -142,19 +140,9 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
             if (alreadyBlogItem != null) {
 
                 if (pictureUri != null) {
-                    db.collection("data/v1/blogs")
-                        .get()
-                        .addOnSuccessListener { result ->
-
-                            result.forEach {
-                                if (it.get("blog_id") as Long > blogId) {
-                                    blogId = "${it.get("blog_id")}".toLong()
-                                }
-                            }
-                            blogId++
 
 
-                            val filePath =
+                    val filePath =
                                 FirebaseFunctions().getRealPathFromURI(this, pictureUri!!)
                             if (filePath != null) {
                                 val file = File(filePath)
@@ -218,17 +206,6 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
                             }
 
 
-                        }
-                        .addOnFailureListener { e ->
-                            reporters_article_send_btn.isEnabled = true
-                            reporters_article_pb.visibility = View.GONE
-                            reporters_article_send_btn.visibility = View.VISIBLE
-                            Log.w(TAG, "Error adding document", e)
-                            Snackbar.make(
-                                this.findViewById(android.R.id.content),
-                                "Failed ${e.message}", Snackbar.LENGTH_SHORT
-                            ).show()
-                        }
                 } else {
 
 
@@ -251,19 +228,9 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
 
             } else {
                 if (pictureUri != null) {
-                    db.collection("data/v1/blogs")
-                        .get()
-                        .addOnSuccessListener { result ->
-
-                            result.forEach {
-                                if (it.get("blog_id") as Long > blogId) {
-                                    blogId = "${it.get("blog_id")}".toLong()
-                                }
-                            }
-                            blogId++
 
 
-                            val filePath =
+                    val filePath =
                                 FirebaseFunctions().getRealPathFromURI(this, pictureUri!!)
                             if (filePath != null) {
                                 val file = File(filePath)
@@ -297,7 +264,6 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
 
 
                                         val j = hashMapOf(
-                                            "blog_id" to blogId,
                                             "media_url" to "${riversRef.path}",
                                             "title" to reporters_article_input_title.text.toString(),
                                             "content" to reporters_article_input_content.text.toString(),
@@ -329,17 +295,6 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
                             }
 
 
-                        }
-                        .addOnFailureListener { e ->
-                            reporters_article_send_btn.isEnabled = true
-                            reporters_article_pb.visibility = View.GONE
-                            reporters_article_send_btn.visibility = View.VISIBLE
-                            Log.w(TAG, "Error adding document", e)
-                            Snackbar.make(
-                                this.findViewById(android.R.id.content),
-                                "Failed ${e.message}", Snackbar.LENGTH_SHORT
-                            ).show()
-                        }
                 } else {
                     reporters_article_pb.visibility = View.GONE
                     reporters_article_send_btn.visibility = View.VISIBLE
@@ -361,12 +316,8 @@ class WriteBlog :AppCompatActivity(), FirebaseFunctionsResponse {
                 getString(R.string.title_content_length_error), Snackbar.LENGTH_SHORT)
             snackbar.setBackgroundTint(resources.getColor(R.color.colorPrimaryDark))
             snackbar.show()
-
         }
-
-
     }
-
     private fun openImagePicker() {
         if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)

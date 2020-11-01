@@ -23,7 +23,7 @@ public class GlobalViewModel extends AndroidViewModel {
 
     }
 
-    public LiveData<BlogItem> getBlogItem(long id) {
+    public LiveData<BlogItem> getBlogItem(String id) {
         return globalRepository.getBlogItem(id);
     }
 
@@ -40,8 +40,8 @@ public class GlobalViewModel extends AndroidViewModel {
         return globalRepository.getOldBlogItem(oldDate);
     }
 
-    public LiveData<Integer> getPinStatus(long BlogId) {
-        return globalRepository.getPinStatus(BlogId);
+    public LiveData<Integer> getPinStatus(String documentKey) {
+        return globalRepository.getPinStatus(documentKey);
     }
 
 
